@@ -4,13 +4,6 @@
 
 ## Installation
 
-To start with the development, install dependencies with one of the following ways.
-
-### Pip
-
-```console
-```
-
 ### Rye
 
 ```console
