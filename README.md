@@ -1,5 +1,7 @@
 # NABLA-VL
 
+[![Hugging Face](https://img.shields.io/badge/HuggingFace-Model-orange?logo=huggingface)](https://huggingface.co/nablasinc/NABLA-VL-15B) [![arXiv](https://arxiv.org/badge.svg)]()
+
 ## Installation
 
 To start with the development, install dependencies with one of the following ways.
@@ -7,7 +9,6 @@ To start with the development, install dependencies with one of the following wa
 ### Pip
 
 ```console
-pip install .
 ```
 
 ### Rye
@@ -30,7 +31,7 @@ CXX=g++ uv pip install flash-attn --no-build-isolation
 
 ## How to Run
 
-#### Inference
+### Inference
 
 ```python
 import nabla_vl
