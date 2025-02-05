@@ -764,6 +764,7 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         num_tiles: Optional[List[List[int]]] = None,
         return_dict: Optional[bool] = None,
         cache_position: Optional[LongTensor] = None,
+        num_logits_to_keep: int = 1,
     ) -> CausalLMOutputWithPast:
         if inputs_embeds is None:
             (
@@ -796,6 +797,7 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             cache_position=cache_position,
+            num_logits_to_keep=num_logits_to_keep,
         )
 
     def prepare_inputs_for_generation(
