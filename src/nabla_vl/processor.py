@@ -1,45 +1,18 @@
-import abc
-import json
-import math
-import re
-from abc import ABC
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
-import cv2  # type: ignore
 import numpy as np
 import torch
-import torchvision.transforms.functional as VF
-from cv2 import FONT_HERSHEY_COMPLEX_SMALL, LINE_AA  # type: ignore
-from deepspeed.utils import logger
 from PIL import Image
-from torch import BoolTensor, FloatTensor, LongTensor, Tensor
-from torchvision.transforms import InterpolationMode
-from transformers import (
-    AutoImageProcessor,
-    AutoTokenizer,
-    PretrainedConfig,
-    PreTrainedTokenizer,
-    TrainingArguments,
-)
+from torch import BoolTensor, FloatTensor, LongTensor
+from transformers import AutoImageProcessor, AutoTokenizer, PreTrainedTokenizer
 from transformers.image_processing_utils import BaseImageProcessor, BatchFeature
 from transformers.image_utils import ImageInput
-from transformers.models.qwen2_vl.image_processing_qwen2_vl import smart_resize
-from transformers.processing_utils import ProcessingKwargs, ProcessorMixin
+from transformers.processing_utils import ProcessorMixin
 from transformers.tokenization_utils import PreTokenizedInput, TextInput
 from transformers.utils import TensorType
 
 from .config import NablaVLConfig
-from .constants import (
-    IGNORE_TOKEN_ID,
-    IM_END,
-    IM_SEP,
-    IM_START,
-    IMAGE_TOKEN,
-    IMAGE_TOKEN_ID,
-    MEAN,
-    STD,
-    SYSTEM_PROMPT,
-)
+from .constants import IMAGE_TOKEN, IMAGE_TOKEN_ID, SYSTEM_PROMPT
 from .transforms import (
     AddNumTiles,
     AddPatchAttentionMask,
@@ -51,8 +24,8 @@ from .transforms import (
     Normalize,
     Resize,
     Scale,
-    Tokenize,
     ToTensor,
+    Transform,
 )
 
 
@@ -213,6 +186,8 @@ class NablaVLImageProcessor(BaseImageProcessor):
         if isinstance(images, list) is False:
             images = [images]
         for i in range(len(images)):
+            if images[i] is None:
+                images[i] = np.zeros([1, 128, 128, 3], dtype=np.uint8)
             if images[i].ndim == 3:
                 images[i] = images[i][np.newaxis, :, :, :]
         batch = ({"images": images},)
@@ -268,6 +243,8 @@ class NablaVLProcessor(ProcessorMixin):
         num_images: int,
     ) -> LongTensor:
         image_token_id = self.tokenizer.convert_tokens_to_ids(IMAGE_TOKEN)
+        if num_images > 0:
+            instruction += f"{IMAGE_TOKEN * num_images}\n{instruction}"
         input_ids = self.tokenizer.apply_chat_template(
             [
                 {
@@ -276,7 +253,7 @@ class NablaVLProcessor(ProcessorMixin):
                 },
                 {
                     "role": "user",
-                    f"content": f"{IMAGE_TOKEN * num_images}\n{instruction}",
+                    "content": instruction,
                 },
             ],
             add_generation_prompt=True,
@@ -310,11 +287,12 @@ class NablaVLProcessor(ProcessorMixin):
         for i in range(len(images)):
             if isinstance(images[i], Image.Image) is True:
                 images[i] = np.array(images[i])[np.newaxis, :, :, :]
-        if images is not None:
-            image_inputs = self.image_processor(images)
+        if images[0] is None:
+            has_image = False
         else:
-            image_inputs = {}
-        text_inputs = {"input_ids": self.get_input_ids(text, 1)}
+            has_image = True
+        image_inputs = self.image_processor(images)
+        text_inputs = {"input_ids": self.get_input_ids(text, has_image * 1)}
         return BatchFeature(data={"num_images": [1], **text_inputs, **image_inputs})
 
 

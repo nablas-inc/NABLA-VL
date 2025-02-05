@@ -1,8 +1,16 @@
 import json
+import warnings
 from typing import Any
 
 import numpy as np
-from decord import VideoReader, cpu
+
+try:
+    from decord import VideoReader, cpu
+except ModuleNotFoundError:
+    warnings.warn(
+        "decord is not installed on your system. "
+        "Install it if you want to work with video inputs."
+    )
 from PIL import Image
 
 

@@ -15,6 +15,8 @@ def get_input_ids(
     num_images: int,
 ) -> LongTensor:
     image_token_id = tokenizer.convert_tokens_to_ids(IMAGE_TOKEN)
+    if num_images > 0:
+        instruction += f"{IMAGE_TOKEN * num_images}\n{instruction}"
     input_ids = tokenizer.apply_chat_template(
         [
             {
@@ -23,7 +25,7 @@ def get_input_ids(
             },
             {
                 "role": "user",
-                f"content": f"{IMAGE_TOKEN * num_images}\n{instruction}",
+                "content": instruction,
             },
         ],
         add_generation_prompt=True,

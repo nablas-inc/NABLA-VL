@@ -114,8 +114,9 @@ class NablaVLDataset(Dataset):
         self,
         images: List[np.ndarray],
         conversations: List[Dict[str, str]],
+        offset: int = 0,
     ) -> bool:
-        num_images = len(images)
+        num_images = len(images) - offset
         num_image_tokens = self.get_num_image_tokens(conversations)
         return num_images >= num_image_tokens
 
@@ -144,6 +145,7 @@ class NablaVLDataset(Dataset):
         x, annotation_path = self.annotation[i]
         images = []
         if "image" in x:
+            has_image = True
             filenames = x["image"]
             # Not a list if it's single-image dataset
             if isinstance(filenames, list) is False:
@@ -165,6 +167,7 @@ class NablaVLDataset(Dataset):
                 logger.warning(f"detected empty image: {image_paths}")
                 return self[random.randint(0, len(self) - 1)]
         elif "video" in x:
+            has_image = True
             filenames = x["video"]
             if isinstance(filenames, list) is False:
                 filenames = [filenames]
@@ -184,7 +187,9 @@ class NablaVLDataset(Dataset):
             images.extend(videos)
         # Text-only dataset
         else:
-            # NOTE: Without this dummy data, training with DeepSpeed is stuck if all samples are from text-only datasets
+            has_image = False
+            # NOTE: Without this dummy data, training with DeepSpeed is stuck if all
+            # samples are from text-only datasets
             images.append(np.zeros(self.dummy_image_size, dtype=np.uint8))
         conversations = x["conversations"]
         if conversations[0]["from"] != "human":
@@ -196,35 +201,55 @@ class NablaVLDataset(Dataset):
                 f"conversations: {conversations}"
             )
             return self[random.randint(0, len(self) - 1)]
-        # In stage 1, instructions are replaced with single image token
-        if self.remove_instructions is True:
-            for j in range(len(conversations)):
-                if conversations[j]["from"] == "human":
-                    conversations[j]["value"] = self.image_token
-        # Add image token to the first instruction if the number of images is larger than the one of image tokens
-        num_images = len(images)
-        if self.max_num_images_per_sample > 0:
-            if num_images > self.max_num_images_per_sample:
+        if has_image is True:
+            # In stage 1, instructions are replaced with single image token
+            if self.remove_instructions is True:
+                for j in range(len(conversations)):
+                    if conversations[j]["from"] == "human":
+                        conversations[j]["value"] = self.image_token
+            # Add image token to the first instruction if the number of images is
+            # larger than the one of image tokens
+            num_images = len(images)
+            if self.max_num_images_per_sample > 0:
+                if num_images > self.max_num_images_per_sample:
+                    return self[random.randint(0, len(self) - 1)]
+            num_image_tokens = self.get_num_image_tokens(conversations)
+            if num_images > num_image_tokens:
+                n = num_images - num_image_tokens
+                prefix = self.image_token * n + "\n"
+                for j in range(len(conversations)):
+                    if conversations[j]["from"] == "human":
+                        conversations[j]["value"] = prefix + conversations[j]["value"]
+                        break
+            if (
+                self.check_images_and_conversations_format(images, conversations)
+                is False
+            ):
+                logger.warning(
+                    "mismatch detected: "
+                    f"the number of {self.image_token} tokens is larger than the one of image!\n"  # noqa
+                    "in this case, we don't know which image token to delete.\n"
+                    "=== warning report ===\n"
+                    f"annotation path: {annotation_path}\n"
+                    f"num_images: {num_images}\n"
+                    f"conversations: {conversations}"
+                )
                 return self[random.randint(0, len(self) - 1)]
-        num_image_tokens = self.get_num_image_tokens(conversations)
-        if num_images > num_image_tokens:
-            n = num_images - num_image_tokens
-            prefix = self.image_token * n + "\n"
-            for j in range(len(conversations)):
-                if conversations[j]["from"] == "human":
-                    conversations[j]["value"] = prefix + conversations[j]["value"]
-                    break
-        if self.check_images_and_conversations_format(images, conversations) is False:
-            logger.warning(
-                "mismatch detected: "
-                f"the number of {self.image_token} tokens is larger than the one of image!\n"
-                "in this case, we don't know which image token to delete.\n"
-                "=== warning report ===\n"
-                f"annotation path: {annotation_path}\n"
-                f"num_images: {num_images}\n"
-                f"conversations: {conversations}"
-            )
-            return self[random.randint(0, len(self) - 1)]
+        else:
+            if (
+                self.check_images_and_conversations_format(images, conversations, 1)
+                is False
+            ):
+                logger.warning(
+                    "mismatch detected: "
+                    f"the number of {self.image_token} tokens is larger than the one of image!\n"  # noqa
+                    "in this case, we don't know which image token to delete.\n"
+                    "=== warning report ===\n"
+                    f"annotation path: {annotation_path}\n"
+                    f"num_images: {num_images}\n"
+                    f"conversations: {conversations}"
+                )
+                return self[random.randint(0, len(self) - 1)]
         return {
             "images": images,
             "conversations": conversations,

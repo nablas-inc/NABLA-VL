@@ -641,8 +641,34 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             num_images = (input_ids[i] == image_token_id).sum().item()
             # Text-only sequence
             if num_images == 0:
-                input_embeds.append(input_ids[i][attention_masks[i]])
-                new_labels.append(labels[i][attention_masks[i]])
+                max_length = getattr(self.config, "max_length", None)
+                input_ids_per_sample = input_ids[i][attention_masks[i]]
+                input_embeds_per_sample = self.model.embed_tokens(input_ids_per_sample)
+                labels_per_sample = labels[i][attention_masks[i]]
+                # Add registers
+                if self.config.num_registers > 0:
+                    input_embeds_per_sample = torch.cat(
+                        [
+                            self.registers,
+                            image_features[image_id][0:0],
+                            input_embeds_per_sample,
+                        ],
+                        0,
+                    )
+                    labels_per_sample = torch.cat(
+                        [
+                            torch.full(
+                                (self.config.num_registers,),
+                                ignore_token_id,
+                                dtype=torch.long,
+                                device=labels_per_sample.device,
+                            ),
+                            labels_per_sample,
+                        ],
+                        0,
+                    )
+                input_embeds.append(input_embeds_per_sample[:max_length])
+                new_labels.append(labels_per_sample[:max_length])
                 # Skip dummy image features
                 image_id += 1
                 continue
@@ -738,7 +764,6 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         num_tiles: Optional[List[List[int]]] = None,
         return_dict: Optional[bool] = None,
         cache_position: Optional[LongTensor] = None,
-        num_logits_to_keep: Optional[int] = None,
     ) -> CausalLMOutputWithPast:
         if inputs_embeds is None:
             (
@@ -771,7 +796,6 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             cache_position=cache_position,
-            num_logits_to_keep=num_logits_to_keep,
         )
 
     def prepare_inputs_for_generation(
