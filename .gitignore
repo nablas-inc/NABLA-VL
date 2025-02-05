@@ -168,6 +168,7 @@ wandb/
 # Evaluation result
 logs/
 .data/
+.vscode/
 
 # macOS
 .DS_Store
