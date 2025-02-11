@@ -1,13 +1,12 @@
 import numpy as np
 import torch
 from datasets import load_dataset
-from transformers import AutoTokenizer
 from tqdm.auto import tqdm
+from transformers import AutoTokenizer
 
 from nabla_vl.inference import run_model
 from nabla_vl.model import NablaVLForCausalLM
 from nabla_vl.transforms import build_data_pipeline
-
 
 MODEL_NAME = "nablasinc/NABLA-VL-15B"
 DEVICE = "cuda"
@@ -58,7 +57,8 @@ def evaluate_mmmu(
             for i in range(1, max_num_images + 1):
                 if item[f"image_{i}"] is None:
                     break
-                images.append(np.array(item[f"image_{i}"].convert("RGB"))[np.newaxis, :, :, :])
+                image = np.array(item[f"image_{i}"].convert("RGB"))[np.newaxis, :, :, :]
+                images.append(image)
             # Preprocess text
             choices = ""
             try:
@@ -73,13 +73,17 @@ def evaluate_mmmu(
                 item["question"] + "\nOptions:\n" + choices + INSTRUCTION[language],
                 max_num_images,
             )
-            response = run_model(
-                model,
-                tokenizer,
-                data_pipeline,
-                instruction,
-                images=images,
-            )[0].strip().upper()
+            response = (
+                run_model(
+                    model,
+                    tokenizer,
+                    data_pipeline,
+                    instruction,
+                    images=images,
+                )[0]
+                .strip()
+                .upper()
+            )
             score += 1 * (response == fomatter(item["answer"]))
             n += 1
     print(f"score: {score / n * 100.0:.2f}")
