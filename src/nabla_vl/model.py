@@ -193,7 +193,7 @@ def adjust_inputs_and_labels(
         device=position_ids.device,
     )
     for i in range(n):
-        l = input_embeds[i].size(0)
+        l = input_embeds[i].size(0)  # noqa
         if padding_side == "left":
             new_input_embeds.append(
                 torch.cat(

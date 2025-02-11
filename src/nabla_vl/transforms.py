@@ -1,9 +1,8 @@
 import abc
-import json
 import math
 import re
 from abc import ABC
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import cv2  # type: ignore
 import numpy as np
@@ -11,24 +10,11 @@ import torch
 import torchvision.transforms.functional as VF
 from cv2 import FONT_HERSHEY_COMPLEX_SMALL, LINE_AA  # type: ignore
 from deepspeed.utils import logger
-from PIL import Image
 from torch import BoolTensor, FloatTensor, LongTensor, Tensor
 from torchvision.transforms import InterpolationMode
-from transformers import (
-    AutoImageProcessor,
-    AutoTokenizer,
-    PretrainedConfig,
-    PreTrainedTokenizer,
-    TrainingArguments,
-)
-from transformers.image_processing_utils import BaseImageProcessor, BatchFeature
-from transformers.image_utils import ImageInput
+from transformers import PretrainedConfig, PreTrainedTokenizer, TrainingArguments
 from transformers.models.qwen2_vl.image_processing_qwen2_vl import smart_resize
-from transformers.processing_utils import ProcessingKwargs, ProcessorMixin
-from transformers.tokenization_utils import PreTokenizedInput, TextInput
-from transformers.utils import TensorType
 
-from .config import NablaVLConfig
 from .constants import (
     IGNORE_TOKEN_ID,
     IM_END,
@@ -834,7 +820,8 @@ class AnyRes(Transform):
                             min_pixels=self.min_pixels,
                             max_pixels=self.max_pixels,
                         )
-                    # smart_resize raises ValueError when image or aspect ratio is too small
+                    # smart_resize raises ValueError when image or aspect ratio is too
+                    # small
                     except ValueError:
                         raise ValueError("TODO")
                     # Resize image to the size of smart_resize
@@ -845,7 +832,8 @@ class AnyRes(Transform):
                         # Round by patch_size to resize patch_attention_mask correctly
                         h = math.ceil(scale * h / patch_size) * patch_size
                         w = math.ceil(scale * w / patch_size) * patch_size
-                    # If the number of tiles is larger than max_num_tiles, reduce it to max_num_tiles
+                    # If the number of tiles is larger than max_num_tiles, reduce it to
+                    # max_num_tiles
                     for _ in range(50):
                         num_rows, num_cols = self.estimate_num_tiles(h, w)
                         if num_rows * num_cols > self.max_num_tiles:

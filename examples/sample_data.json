@@ -1,0 +1,41 @@
+[
+    {
+        "image": "birds.jpg",
+        "conversations": [
+            {
+                "from": "human",
+                "value": "<image>\nHow many birds are there?"
+            },
+            {
+                "from": "gpt",
+                "value": "9"
+            }
+        ]
+    },
+    {
+        "image": "birds.jpg",
+        "conversations": [
+            {
+                "from": "human",
+                "value": "<image>\nHow many birds are facing right?"
+            },
+            {
+                "from": "gpt",
+                "value": "4"
+            }
+        ]
+    },
+    {
+        "image": "birds.jpg",
+        "conversations": [
+            {
+                "from": "human",
+                "value": "<image>\nHow many birds are facing left?"
+            },
+            {
+                "from": "gpt",
+                "value": "5"
+            }
+        ]
+    }
+]

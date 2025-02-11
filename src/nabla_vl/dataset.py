@@ -177,7 +177,7 @@ class NablaVLDataset(Dataset):
             for video_path in video_paths:
                 try:
                     video = load_video(video_path)
-                except:  # TODO: Add error handling
+                except:  # TODO: Add error handling  # noqa
                     logger.warning(f"detected corrupted video: {video_path}")
                     return self[random.randint(0, len(self) - 1)]
                 videos.extend([image[np.newaxis, :, :, :] for image in list(video)])
@@ -192,6 +192,10 @@ class NablaVLDataset(Dataset):
             # samples are from text-only datasets
             images.append(np.zeros(self.dummy_image_size, dtype=np.uint8))
         conversations = x["conversations"]
+        for i in range(len(conversations)):
+            if conversations[i]["value"] is None:
+                logger.warning(f"detected empty conversations: {conversations}")
+                return self[random.randint(0, len(self) - 1)]
         if conversations[0]["from"] != "human":
             logger.warning(
                 "invalid conversations detected: "
@@ -246,7 +250,7 @@ class NablaVLDataset(Dataset):
                     "in this case, we don't know which image token to delete.\n"
                     "=== warning report ===\n"
                     f"annotation path: {annotation_path}\n"
-                    f"num_images: {num_images}\n"
+                    f"num_images: {0}\n"
                     f"conversations: {conversations}"
                 )
                 return self[random.randint(0, len(self) - 1)]
