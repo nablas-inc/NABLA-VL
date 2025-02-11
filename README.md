@@ -22,9 +22,47 @@ uv pip install torch
 CXX=g++ uv pip install flash-attn --no-build-isolation
 ```
 
-## How to Run
+## Getting Started
+
+### Training
+
+<details>
+<summary>Data Format</summary>
+
+```json
+[
+    ...
+    {
+        "image": "birds.jpg",  // {image_dir}/birds.jpg will be loaded during training (image_dir comes from config).
+        "conversations": [  // conversations is pair(s) of input(s) and output(s).
+            {
+                "from": "human",
+                "value": "<image>\nHow many birds are there?"  // This is prompt. You can drop <image>\n. In that case, it automatically prepends <image>\n.
+            },
+            {
+                "from": "gpt",
+                "value": "9"  // This is label.
+            }
+        ]
+    },
+    {
+        "image": ["image_0.jpg", "image_1.jpg"],  // Use list for multi-image input.
+        ...
+    },
+    {
+        "video": "video.mp4",  // Use video key if input is video.
+        ...
+    },
+    ...
+]
+```
+
+</details>
 
 ### Inference
+
+<details>
+<summary>Python Code</summary>
 
 ```python
 import nabla_vl
@@ -43,8 +81,10 @@ pipe = pipeline(TASK, MODEL, processor=processor, torch_dtype=torch.bfloat16)
 with torch.autocast(DEVICE), torch.inference_mode():
     response = pipe(
         "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/bee.jpg",
-        text="Describe this image",
+        text="この画像について教えてください！",
         return_full_text=False,
     )
 print(response)
 ```
+
+</details>

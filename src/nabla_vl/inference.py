@@ -16,7 +16,7 @@ def get_input_ids(
 ) -> LongTensor:
     image_token_id = tokenizer.convert_tokens_to_ids(IMAGE_TOKEN)
     if num_images > 0:
-        instruction += f"{IMAGE_TOKEN * num_images}\n{instruction}"
+        instruction = f"{IMAGE_TOKEN * num_images}\n{instruction}"
     input_ids = tokenizer.apply_chat_template(
         [
             {
@@ -61,4 +61,4 @@ def run_model(
     batch["images"] = [i.to(device) for i in batch["images"]]
     with torch.autocast(device), torch.inference_mode():
         response = model.generate(**batch, max_new_tokens=512)
-    return tokenizer.batch_decode(response, skip_special_tokens=False)
+    return tokenizer.batch_decode(response, skip_special_tokens=True)
