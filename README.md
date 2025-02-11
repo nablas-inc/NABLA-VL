@@ -62,7 +62,7 @@ CXX=g++ uv pip install flash-attn --no-build-isolation
 ### Inference
 
 <details>
-<summary>Python Code</summary>
+<summary>🤗 Pipelines</summary>
 
 ```python
 import nabla_vl
