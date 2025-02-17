@@ -7,6 +7,7 @@ from deepspeed.utils import logger
 from pandas import DataFrame
 from transformers import AutoTokenizer
 from tqdm.auto import tqdm
+from transformers import AutoTokenizer
 
 from nabla_vl.benchmark import build_benchmark
 from nabla_vl.inference import run_model
