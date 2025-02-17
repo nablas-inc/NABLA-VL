@@ -574,11 +574,11 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
     def add_noise_to_inputs_embeds(
         self,
         input_embeds: FloatTensor,
-        attention_masks: BoolTensor,
+        attention_mask: BoolTensor,
     ) -> FloatTensor:
-        input_lengths = torch.sum(attention_masks, 1).to(input_embeds)
+        input_lengths = torch.sum(attention_mask, 1).to(input_embeds)
         noise_ = torch.zeros_like(input_embeds).uniform_(-1, 1)
-        delta = noise_ * attention_masks.unsqueeze(2)
+        delta = noise_ * attention_mask.unsqueeze(2)
         dims = input_lengths * input_embeds.size(-1)
         mag = self.config.neftune_alpha / torch.sqrt(dims)
         delta = (delta * mag.view(-1, 1, 1)).detach()
@@ -589,7 +589,7 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         self,
         input_ids: LongTensor,
         *,
-        attention_masks: Optional[LongTensor] = None,
+        attention_mask: Optional[LongTensor] = None,
         patch_attention_masks: Optional[BoolTensor] = None,
         position_ids: Optional[LongTensor] = None,
         past_key_values: Optional[List[FloatTensor]] = None,
@@ -605,7 +605,7 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         if images is None or len(images) == 0 or input_ids.shape[1] == 1:
             return (
                 input_ids,
-                attention_masks,
+                attention_mask,
                 position_ids,
                 past_key_values,
                 None,
@@ -619,11 +619,11 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         )
         skip_labels = labels
         skip_position_ids = position_ids
-        skip_attention_masks = attention_masks
-        if attention_masks is None:
-            attention_masks = torch.ones_like(input_ids, dtype=torch.bool)
+        skip_attention_mask = attention_mask
+        if attention_mask is None:
+            attention_mask = torch.ones_like(input_ids, dtype=torch.bool)
         else:
-            attention_masks = attention_masks.bool()
+            attention_mask = attention_mask.bool()
         if position_ids is None:
             position_ids = torch.arange(
                 0,
@@ -642,9 +642,9 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             # Text-only sequence
             if num_images == 0:
                 max_length = getattr(self.config, "max_length", None)
-                input_ids_per_sample = input_ids[i][attention_masks[i]]
+                input_ids_per_sample = input_ids[i][attention_mask[i]]
                 input_embeds_per_sample = self.model.embed_tokens(input_ids_per_sample)
-                labels_per_sample = labels[i][attention_masks[i]]
+                labels_per_sample = labels[i][attention_mask[i]]
                 # Add registers
                 if self.config.num_registers > 0:
                     input_embeds_per_sample = torch.cat(
@@ -675,7 +675,7 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             input_ids_per_sample, labels_per_sample, split_sections = split_input_ids(
                 input_ids[i],
                 labels[i],
-                attention_masks[i],
+                attention_mask[i],
             )
             input_embeds_per_sample = self.model.embed_tokens(input_ids_per_sample)
             start = image_id
@@ -715,9 +715,9 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             labels_per_sample = labels_per_sample[:max_length]
             input_embeds.append(input_embeds_per_sample)
             new_labels.append(labels_per_sample)
-        input_embeds, attention_masks, labels, position_ids = adjust_inputs_and_labels(
+        input_embeds, attention_mask, labels, position_ids = adjust_inputs_and_labels(
             input_embeds,
-            attention_masks,
+            attention_mask,
             new_labels,
             position_ids,
             self.config.padding_side,
@@ -727,19 +727,17 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         if self.config.neftune_alpha is not None and self.training is True:
             input_embeds = self.add_noise_to_inputs_embeds(
                 input_embeds,
-                attention_masks,
+                attention_mask,
             )
         if skip_labels is None:
             labels = None
-        if skip_attention_masks is None:
-            attention_masks = None
-        # else:
-        #     attention_masks = attention_masks.to(dtype=skip_attention_masks.dtype)
+        if skip_attention_mask is None:
+            attention_mask = None
         if skip_position_ids is None:
             position_ids = None
         return (
             None,
-            attention_masks,
+            attention_mask,
             position_ids,
             past_key_values,
             input_embeds,
@@ -750,7 +748,7 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         self,
         *,
         input_ids: Optional[LongTensor] = None,
-        attention_masks: Optional[LongTensor] = None,
+        attention_mask: Optional[LongTensor] = None,
         patch_attention_masks: Optional[BoolTensor] = None,
         position_ids: Optional[LongTensor] = None,
         past_key_values: Optional[List[FloatTensor]] = None,
@@ -769,14 +767,14 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         if inputs_embeds is None:
             (
                 input_ids,
-                attention_masks,
+                attention_mask,
                 position_ids,
                 past_key_values,
                 inputs_embeds,
                 labels,
             ) = self.prepare_inputs_for_forward(
                 input_ids=input_ids,
-                attention_masks=attention_masks,
+                attention_mask=attention_mask,
                 patch_attention_masks=patch_attention_masks,
                 position_ids=position_ids,
                 past_key_values=past_key_values,
@@ -787,7 +785,7 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             )
         return super().forward(
             input_ids=input_ids,
-            attention_mask=attention_masks,
+            attention_mask=attention_mask,
             position_ids=position_ids,
             past_key_values=past_key_values,
             inputs_embeds=inputs_embeds,
@@ -804,7 +802,7 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         self,
         input_ids: Optional[LongTensor] = None,
         past_key_values: Optional[List[FloatTensor]] = None,
-        attention_masks: Optional[LongTensor] = None,
+        attention_mask: Optional[LongTensor] = None,
         inputs_embeds: Optional[FloatTensor] = None,
         cache_position: Optional[LongTensor] = None,
         position_ids: Optional[LongTensor] = None,
@@ -818,7 +816,7 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         inputs = super().prepare_inputs_for_generation(
             input_ids,
             past_key_values=past_key_values,
-            attention_mask=attention_masks,
+            attention_mask=attention_mask,
             inputs_embeds=inputs_embeds,
             cache_position=cache_position,
             position_ids=position_ids,
@@ -833,7 +831,6 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             inputs["num_tiles"] = num_tiles
         if patch_attention_masks is not None:
             inputs["patch_attention_masks"] = patch_attention_masks
-        # inputs["attention_masks"] = inputs.pop("attention_mask")
         return inputs
 
     @torch.no_grad()
@@ -841,8 +838,7 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         self,
         *,
         input_ids: Optional[LongTensor] = None,
-        # FIXME: attention_masks doesn't work during inference
-        attention_masks: Optional[LongTensor] = None,
+        attention_mask: Optional[LongTensor] = None,
         patch_attention_masks: Optional[BoolTensor] = None,
         position_ids: Optional[LongTensor] = None,
         past_key_values: Optional[List[FloatTensor]] = None,
@@ -853,23 +849,20 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         images: Optional[List[FloatTensor]] = None,
         num_images: Optional[List[int]] = None,
         num_tiles: Optional[List[List[int]]] = None,
-        # return_dict: Optional[bool] = None,
         cache_position: Optional[LongTensor] = None,
         **kwargs,
     ) -> GenerateOutput:
-        if "attention_mask" in kwargs:
-            del kwargs["attention_mask"]
         if images is not None:
             (
                 _,
-                attention_masks,
+                attention_mask,
                 position_ids,
                 past_key_values,
                 inputs_embeds,
                 _,
             ) = self.prepare_inputs_for_forward(
                 input_ids=input_ids,
-                attention_masks=attention_masks,
+                attention_mask=attention_mask,
                 patch_attention_masks=patch_attention_masks,
                 position_ids=position_ids,
                 past_key_values=past_key_values,
@@ -881,12 +874,11 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             inputs_embeds = self.model.embed_tokens(input_ids)
         return super().generate(
             position_ids=position_ids,
-            attention_masks=attention_masks,
+            attention_mask=attention_mask,
             inputs_embeds=inputs_embeds,
             use_cache=use_cache,
             output_attentions=output_attentions,
             output_hidden_states=output_hidden_states,
-            # return_dict=return_dict,
             cache_position=cache_position,
             past_key_values=past_key_values,
             **kwargs,

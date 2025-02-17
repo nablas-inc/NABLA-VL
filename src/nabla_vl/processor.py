@@ -244,7 +244,7 @@ class NablaVLProcessor(ProcessorMixin):
     ) -> LongTensor:
         image_token_id = self.tokenizer.convert_tokens_to_ids(IMAGE_TOKEN)
         if num_images > 0:
-            instruction += f"{IMAGE_TOKEN * num_images}\n{instruction}"
+            instruction = f"{IMAGE_TOKEN * num_images}\n{instruction}"
         input_ids = self.tokenizer.apply_chat_template(
             [
                 {
@@ -293,6 +293,9 @@ class NablaVLProcessor(ProcessorMixin):
             has_image = True
         image_inputs = self.image_processor(images)
         text_inputs = {"input_ids": self.get_input_ids(text, has_image * 1)}
+        text_inputs["attention_mask"] = text_inputs["input_ids"].ne(
+            self.tokenizer.pad_token_id
+        )
         return BatchFeature(data={"num_images": [1], **text_inputs, **image_inputs})
 
 

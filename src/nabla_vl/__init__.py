@@ -1,4 +1,5 @@
 from . import (
+    benchmark,
     config,
     dataset,
     inference,
@@ -13,6 +14,7 @@ from . import (
 )
 
 __all__ = [
+    "benchmark",
     "config",
     "dataset",
     "inference",

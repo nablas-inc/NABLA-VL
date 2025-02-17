@@ -215,10 +215,10 @@ class DataPipeline(object):
         # NOTE: len(input_ids) == len(labels) == 0 during inference
         if len(input_ids) > 0:
             input_ids = self.pad_to_max_len(input_ids)
-            attention_masks = input_ids.ne(self.pad_token_id)
+            attention_mask = input_ids.ne(self.pad_token_id)
         else:
             input_ids = None
-            attention_masks = None
+            attention_mask = None
         if len(labels) > 0:
             labels = self.pad_to_max_len(labels)
         else:
@@ -229,7 +229,7 @@ class DataPipeline(object):
         )
         return {
             "input_ids": input_ids,
-            "attention_masks": attention_masks,
+            "attention_mask": attention_mask,
             "patch_attention_masks": patch_attention_masks,
             "labels": labels,
             "images": images,

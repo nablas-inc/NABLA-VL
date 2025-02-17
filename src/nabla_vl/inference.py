@@ -3,9 +3,9 @@ from typing import Any, List, Optional
 import torch
 from PIL import Image
 from torch import LongTensor
-from transformers import PreTrainedModel, PreTrainedTokenizer
+from transformers import PreTrainedModel, PreTrainedTokenizer, TextStreamer
 
-from .constants import IMAGE_TOKEN, IMAGE_TOKEN_ID, SYSTEM_PROMPT
+from .constants import IMAGE_TOKEN, IMAGE_TOKEN_ID, SYSTEM_PROMPT, IM_SEP
 from .transforms import DataPipeline
 
 
@@ -47,18 +47,54 @@ def run_model(
     *,
     images: Optional[List[Image.Image]] = None,
     device: Any = "cuda",
+    max_new_tokens: int = 512,
 ) -> str:
     batch = ({"images": images},)
     batch = data_pipeline(batch)
     # Multi-images are arranged into a single image
     batch["input_ids"] = get_input_ids(tokenizer, instruction, 1)
     batch["input_ids"] = batch["input_ids"].to(device)
-    # FIXME
-    # batch["attention_masks"] = batch["input_ids"].ne(tokenizer.pad_token_id)
+    batch["attention_mask"] = batch["input_ids"].ne(tokenizer.pad_token_id)
     # TODO: Rename it
     for i, mask in enumerate(batch["patch_attention_masks"]):
         batch["patch_attention_masks"][i] = mask.to(device)
     batch["images"] = [i.to(device) for i in batch["images"]]
     with torch.autocast(device), torch.inference_mode():
-        response = model.generate(**batch, max_new_tokens=512)
-    return tokenizer.batch_decode(response, skip_special_tokens=True)
+        response = model.generate(
+            **batch, max_new_tokens=max_new_tokens, pad_token_id=tokenizer.pad_token_id
+        )
+    # Skip eos token
+    return tokenizer.batch_decode(response[:, :-1], skip_special_tokens=False)
+
+
+def run_model_with_stream(
+    model: PreTrainedModel,
+    tokenizer: PreTrainedTokenizer,
+    data_pipeline: DataPipeline,
+    instruction: str,
+    *,
+    images: Optional[List[Image.Image]] = None,
+    device: Any = "cuda",
+) -> None:
+    streamer = TextStreamer(
+        tokenizer,
+        skip_prompt=False,
+        skip_special_tokens=True,
+    )
+    batch = ({"images": images},)
+    batch = data_pipeline(batch)
+    # Multi-images are arranged into a single image
+    batch["input_ids"] = get_input_ids(tokenizer, instruction, 1)
+    batch["input_ids"] = batch["input_ids"].to(device)
+    batch["attention_mask"] = batch["input_ids"].ne(tokenizer.pad_token_id)
+    # TODO: Rename it
+    for i, mask in enumerate(batch["patch_attention_masks"]):
+        batch["patch_attention_masks"][i] = mask.to(device)
+    batch["images"] = [i.to(device) for i in batch["images"]]
+    with torch.autocast(device), torch.inference_mode():
+        model.generate(
+            **batch,
+            max_new_tokens=1024,
+            num_beams=1,
+            streamer=streamer,
+        )

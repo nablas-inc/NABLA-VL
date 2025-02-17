@@ -12,7 +12,7 @@ from transformers import PretrainedConfig, TrainingArguments
 
 
 def get_dtype_by_args(
-    args_or_config: Union[TrainingArguments, PretrainedConfig]
+    args_or_config: Union[TrainingArguments, PretrainedConfig],
 ) -> Any:
     if args_or_config.fp16 is True:
         dtype = torch.float16

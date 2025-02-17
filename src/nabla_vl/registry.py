@@ -21,3 +21,4 @@ class Registry(object):
 
 
 DATASETS = Registry()
+BENCHMARKS = Registry()
