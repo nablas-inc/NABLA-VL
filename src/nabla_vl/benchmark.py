@@ -1,4 +1,5 @@
 import abc
+import os
 from abc import ABC
 from collections import OrderedDict
 from typing import Any, Dict, Optional, List
@@ -12,6 +13,7 @@ from tqdm.auto import tqdm
 
 from .constants import CHAT_TEMPLATE_WITHOUT_SYSTEM_MESSAGE
 from .inference import run_model
+from .io import load_video
 from .registry import BENCHMARKS
 from .transforms import build_data_pipeline
 
@@ -23,13 +25,15 @@ def build_benchmark(
     *,
     device: Any = "cuda",
     dtype: Any = torch.bfloat16,
+    image_dir: Optional[str] = None,
 ) -> "Benchmark":
-    logger.info(f"Initialize {name}")
+    logger.info(f"Initializing {name}")
     benchmark = BENCHMARKS[name](
         model_name_or_path,
         split,
         device=device,
         dtype=dtype,
+        image_dir=image_dir,
     )
     return benchmark
 
@@ -42,11 +46,13 @@ class Benchmark(ABC):
         *,
         device: Any = "cuda",
         dtype: Any = torch.bfloat16,
+        image_dir: Optional[str] = None,
     ) -> None:
         self.model_name_or_path = model_name_or_path
         self.split = split
         self.device = device
         self.dtype = dtype
+        self.image_dir = image_dir
         self.model = AutoModelForImageTextToText.from_pretrained(
             model_name_or_path,
             torch_dtype=dtype,
@@ -345,5 +351,42 @@ class BLINK(MMMU):
 
     def compare(self, response: str, answer: str) -> bool:
         is_correct = response == answer[1]
+        return is_correct
+
+
+@BENCHMARKS.register_cls()
+class VideoMME(Benchmark):
+    prefix: Dict[str, str] = {
+        "multiple-choice": "Answer with the option's letter from the given choices directly. Don't include prefix like 'The answer is'",
+    }
+    max_num_images = 7
+
+    def load_items(self) -> None:
+        self.items = load_dataset("lmms-lab/Video-MME", split=self.split)
+
+    def get_instruction(self, item: Dict[str, Any]) -> str:
+        choices = ""
+        for i in range(len(item["options"])):
+            choices += item["options"][i] + "\n"
+        instruction = item["question"]
+        instruction += "\nOptions:\n"
+        instruction += choices
+        instruction += self.prefix["multiple-choice"]
+        return instruction
+
+    def get_answer(self, item: Dict[str, Any]) -> str:
+        answer = item["answer"]
+        return answer
+
+    def get_images(self, item: Dict[str, Any]) -> Optional[List[np.ndarray]]:
+        images = []
+        path = os.path.join(self.image_dir, item["videoID"] + ".mp4")
+        for image in list(load_video(path, max_num_frames=32)):
+            images.append(image[np.newaxis, :, :, :])
+        return images
+
+    def compare(self, response: str, answer: str) -> bool:
+        print(response, answer)
+        is_correct = response == answer
         return is_correct
     
