@@ -1,12 +1,10 @@
 import click
-
 from deepspeed.utils import logger
 
 from nabla_vl.benchmark import build_benchmark
 from nabla_vl.utils import set_random_seed
 
-
-MODEL_NAME = "nablasinc/NABLA-VL-15B"
+MODEL_NAME = "nablasinc/NABLA-VL"
 DEVICE = "cuda"
 
 
@@ -18,7 +16,13 @@ DEVICE = "cuda"
 @click.option("--image-dir", type=str)
 def main(benchmark_name, model_name_or_path, split, device, image_dir):
     set_random_seed(42)
-    benchmark = build_benchmark(benchmark_name, model_name_or_path, split, image_dir=image_dir)
+    benchmark = build_benchmark(
+        benchmark_name,
+        model_name_or_path,
+        split,
+        device=device,
+        image_dir=image_dir,
+    )
     score = benchmark.evaluate()
     logger.info(f"name: {benchmark_name}, score: {score:.4f}")
 

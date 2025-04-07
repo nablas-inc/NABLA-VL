@@ -2,14 +2,14 @@ import abc
 import os
 from abc import ABC
 from collections import OrderedDict
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import torch
 from datasets import concatenate_datasets, load_dataset
 from deepspeed.utils import logger
-from transformers import AutoModelForImageTextToText, AutoTokenizer
 from tqdm.auto import tqdm
+from transformers import AutoModelForImageTextToText, AutoTokenizer
 
 from .constants import CHAT_TEMPLATE_WITHOUT_SYSTEM_MESSAGE
 from .inference import run_model
@@ -85,14 +85,18 @@ class Benchmark(ABC):
     def compare(self, response: str, answer: str) -> bool:
         return True
 
-    def get_response(self, instruction: str, *, images: Optional[np.ndarray] = None) -> str:
+    def get_response(
+        self, instruction: str, *, images: Optional[np.ndarray] = None
+    ) -> str:
         response = run_model(
             self.model,
             self.tokenizer,
             self.data_pipeline,
             instruction,
             images=images,
+            device=self.device,
             max_new_tokens=12,
+            replace_image_tokens=True,
         )[0].strip()
         return response
 
@@ -146,7 +150,10 @@ class MMMU(Benchmark):
         "Sociology",
     ]
     prefix: Dict[str, str] = {
-        "multiple-choice": "Answer with the option's letter from the given choices directly. Don't include prefix like 'The answer is'",
+        "multiple-choice": (
+            "Answer with the option's letter from the given choices "
+            "directly. Don't include prefix like 'The answer is'"
+        ),
         "open": "Answer the question using a single word or phrase.",
     }
     max_num_images = 7
@@ -189,12 +196,29 @@ class MMMU(Benchmark):
         for i in range(1, self.max_num_images + 1):
             if item[f"image_{i}"] is None:
                 break
-            images.append(np.array(item[f"image_{i}"].convert("RGB"))[np.newaxis, :, :, :])
+            images.append(
+                np.array(item[f"image_{i}"].convert("RGB"))[np.newaxis, :, :, :]
+            )
         return images
 
     def compare(self, response: str, answer: str) -> bool:
         is_correct = response == answer
         return is_correct
+
+    def get_response(
+        self, instruction: str, *, images: Optional[np.ndarray] = None
+    ) -> str:
+        response = run_model(
+            self.model,
+            self.tokenizer,
+            self.data_pipeline,
+            instruction,
+            images=images,
+            device=self.device,
+            max_new_tokens=12,
+            replace_image_tokens=False,
+        )[0].strip()
+        return response
 
 
 @BENCHMARKS.register_cls()
@@ -253,7 +277,7 @@ class JMMMU(MMMU):
                 assert 65 + i < 91
                 choices += chr(65 + i) + ". " + item["options"][i] + "\n"
             instruction = item["question"]
-            instruction += "\選択肢:\n"
+            instruction += "選択肢:\n"
             instruction += choices
             instruction += self.prefix["multiple-choice"]
         elif item["question_type"] == "open":
@@ -263,13 +287,15 @@ class JMMMU(MMMU):
         else:
             raise ValueError
         return instruction
-        
 
 
 @BENCHMARKS.register_cls()
 class MMStar(Benchmark):
     prefix: Dict[str, str] = {
-        "multiple-choice": "Answer with the option's letter from the given choices directly. Don't include prefix like 'The answer is'",
+        "multiple-choice": (
+            "Answer with the option's letter from the given choices "
+            "directly. Don't include prefix like 'The answer is'"
+        ),
     }
 
     def load_items(self) -> None:
@@ -286,7 +312,7 @@ class MMStar(Benchmark):
         return answer
 
     def get_images(self, item: Dict[str, Any]) -> Optional[List[np.ndarray]]:
-        images = [np.array(item[f"image"].convert("RGB"))[np.newaxis, :, :, :]]
+        images = [np.array(item["image"].convert("RGB"))[np.newaxis, :, :, :]]
         return images
 
     def compare(self, response: str, answer: str) -> bool:
@@ -313,7 +339,10 @@ class BLINK(MMMU):
         "Visual_Similarity",
     ]
     prefix: Dict[str, str] = {
-        "multiple-choice": "Answer with the option's letter from the given choices directly. Don't include prefix like 'The answer is'",
+        "multiple-choice": (
+            "Answer with the option's letter from the given choices "
+            "directly. Don't include prefix like 'The answer is'"
+        ),
     }
     max_num_images = 4
 
@@ -346,7 +375,9 @@ class BLINK(MMMU):
         for i in range(1, self.max_num_images + 1):
             if item[f"image_{i}"] is None:
                 break
-            images.append(np.array(item[f"image_{i}"].convert("RGB"))[np.newaxis, :, :, :])
+            images.append(
+                np.array(item[f"image_{i}"].convert("RGB"))[np.newaxis, :, :, :]
+            )
         return images
 
     def compare(self, response: str, answer: str) -> bool:
@@ -357,7 +388,10 @@ class BLINK(MMMU):
 @BENCHMARKS.register_cls()
 class VideoMME(Benchmark):
     prefix: Dict[str, str] = {
-        "multiple-choice": "Answer with the option's letter from the given choices directly. Don't include prefix like 'The answer is'",
+        "multiple-choice": (
+            "Answer with the option's letter from the given choices "
+            "directly. Don't include prefix like 'The answer is'"
+        ),
     }
     max_num_images = 7
 
@@ -389,4 +423,3 @@ class VideoMME(Benchmark):
         print(response, answer)
         is_correct = response == answer
         return is_correct
-    

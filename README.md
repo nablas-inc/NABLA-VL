@@ -65,10 +65,10 @@ CXX=g++ uv pip install flash-attn --no-build-isolation
 <summary>Example</summary>
 
 ```console
-python tools/evaluate.py --benchmark-name MMMU --split validation
-python tools/evaluate.py --benchmark-name JMMMU --split test
-python tools/evaluate.py --benchmark-name MMStar --split val
-python tools/evaluate.py --benchmark-name BLINK --split val
+python tools/evaluate.py --benchmark-name MMMU --split validation --device cuda
+python tools/evaluate.py --benchmark-name JMMMU --split test --device cuda
+python tools/evaluate.py --benchmark-name MMStar --split val --device cuda
+python tools/evaluate.py --benchmark-name BLINK --split val --device cuda
 ```
 
 </details>
@@ -86,7 +86,7 @@ from transformers import pipeline
 
 
 TASK = "image-text-to-text"
-MODEL = "nablasinc/NABLA-VL-15B"
+MODEL = "nablasinc/NABLA-VL"
 DEVICE = "cuda"
 
 
@@ -115,11 +115,12 @@ from nabla_vl.io import load_image
 from nabla_vl.model import NablaVLForCausalLM
 from nabla_vl.transforms import build_data_pipeline
 
-MODEL = "nablasinc/NABLA-VL-15B"
+MODEL = "nablasinc/NABLA-VL"
+DEVICE = "cuda"
 
 
 model = NablaVLForCausalLM.from_pretrained(MODEL, torch_dtype=torch.bfloat16)
-model.to("cuda")
+model.to(DEVICE)
 model.eval()
 tokenizer = AutoTokenizer.from_pretrained(MODEL, use_fast=False)
 data_pipeline = build_data_pipeline(model.config, tokenizer)
@@ -145,6 +146,7 @@ run_model_with_stream(
     data_pipeline,
     instruction,
     images=images,
+    device=DEVICE,
 )
 ```
 

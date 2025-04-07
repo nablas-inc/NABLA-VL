@@ -15,12 +15,14 @@ accelerate==1.0.0
     # via peft
     # via trl
 aiofiles==23.2.1
+    # via chainlit
     # via gradio
 aiohappyeyeballs==2.4.3
     # via aiohttp
-aiohttp==3.10.9
+aiohttp==3.11.13
     # via datasets
     # via fsspec
+    # via nabla-vl
 aiosignal==1.3.1
     # via aiohttp
 albucore==0.0.23
@@ -31,11 +33,15 @@ altair==5.5.0
     # via streamlit
 annotated-types==0.7.0
     # via pydantic
+annoy==1.17.3
+    # via nabla-vl
 anyio==4.6.0
+    # via asyncer
     # via gradio
     # via httpx
     # via jupyter-server
     # via starlette
+    # via watchfiles
 appdirs==1.4.4
     # via wandb
 argon2-cffi==23.1.0
@@ -50,14 +56,24 @@ asttokens==2.4.1
     # via stack-data
 async-lru==2.0.4
     # via jupyterlab
+asyncer==0.0.7
+    # via chainlit
+asyncpg==0.30.0
+    # via nabla-vl
 attrs==24.2.0
     # via aiohttp
     # via jsonschema
     # via referencing
+azure-core==1.32.0
+    # via azure-storage-blob
+azure-storage-blob==12.24.1
+    # via nabla-vl
 babel==2.16.0
     # via jupyterlab-server
 beautifulsoup4==4.12.3
     # via nbconvert
+bidict==0.23.1
+    # via python-socketio
 bitsandbytes==0.45.2
     # via nabla-vl
 black==25.1.0
@@ -67,9 +83,15 @@ bleach==6.1.0
     # via nbconvert
 blinker==1.9.0
     # via streamlit
+boto3==1.37.10
+    # via nabla-vl
+botocore==1.37.10
+    # via boto3
+    # via s3transfer
 braceexpand==0.1.7
     # via webdataset
 cachetools==5.5.0
+    # via google-auth
     # via streamlit
 certifi==2024.8.30
     # via httpcore
@@ -79,12 +101,18 @@ certifi==2024.8.30
     # via sentry-sdk
 cffi==1.17.1
     # via argon2-cffi-bindings
+    # via cryptography
+chainlit==2.2.1
+    # via nabla-vl
 chardet==5.2.0
     # via mbstrdecoder
 charset-normalizer==3.4.0
     # via requests
+chevron==0.14.0
+    # via literalai
 click==8.1.8
     # via black
+    # via chainlit
     # via nabla-vl
     # via streamlit
     # via typer
@@ -97,10 +125,14 @@ comm==0.2.2
     # via ipywidgets
 contourpy==1.3.0
     # via matplotlib
+cryptography==44.0.2
+    # via azure-storage-blob
 cycler==0.12.1
     # via matplotlib
 dataclasses==0.6
     # via img2dataset
+dataclasses-json==0.6.7
+    # via chainlit
 dataproperty==1.0.1
     # via pytablewriter
     # via tabledata
@@ -118,6 +150,11 @@ deepspeed==0.15.1
     # via nabla-vl
 defusedxml==0.7.1
     # via nbconvert
+deprecated==1.2.18
+    # via opentelemetry-api
+    # via opentelemetry-exporter-otlp-proto-grpc
+    # via opentelemetry-exporter-otlp-proto-http
+    # via opentelemetry-semantic-conventions
 dill==0.3.8
     # via datasets
     # via evaluate
@@ -139,7 +176,8 @@ executing==2.1.0
     # via stack-data
 exifread-nocycle==3.0.1
     # via img2dataset
-fastapi==0.115.0
+fastapi==0.115.9
+    # via chainlit
     # via gradio
     # via nabla-vl
 fastjsonschema==2.20.0
@@ -152,6 +190,8 @@ filelock==3.16.1
     # via torch
     # via transformers
     # via triton
+filetype==1.2.0
+    # via chainlit
 fire==0.5.0
     # via img2dataset
 flake8==7.1.1
@@ -170,19 +210,46 @@ fsspec==2024.2.0
     # via huggingface-hub
     # via img2dataset
     # via torch
+ftfy==6.3.1
+    # via open-clip-torch
+fugashi==1.4.0
+    # via nabla-vl
 gitdb==4.0.11
     # via gitpython
 gitpython==3.1.43
     # via streamlit
     # via wandb
+google-api-core==2.24.2
+    # via google-cloud-core
+    # via google-cloud-storage
+google-auth==2.38.0
+    # via google-api-core
+    # via google-cloud-core
+    # via google-cloud-storage
+google-cloud-core==2.4.3
+    # via google-cloud-storage
+google-cloud-storage==3.1.0
+    # via nabla-vl
+google-crc32c==1.6.0
+    # via google-cloud-storage
+    # via google-resumable-media
+google-resumable-media==2.7.2
+    # via google-cloud-storage
+googleapis-common-protos==1.68.0
+    # via google-api-core
+    # via opentelemetry-exporter-otlp-proto-grpc
+    # via opentelemetry-exporter-otlp-proto-http
 gradio==4.44.1
     # via nabla-vl
 gradio-client==1.3.0
     # via gradio
     # via nabla-vl
+grpcio==1.70.0
+    # via opentelemetry-exporter-otlp-proto-grpc
 h11==0.14.0
     # via httpcore
     # via uvicorn
+    # via wsproto
 hf-transfer==0.1.8
     # via nabla-vl
 hjson==3.1.0
@@ -190,9 +257,11 @@ hjson==3.1.0
 httpcore==1.0.6
     # via httpx
 httpx==0.27.2
+    # via chainlit
     # via gradio
     # via gradio-client
     # via jupyterlab
+    # via literalai
     # via nabla-vl
 huggingface-hub==0.26.2
     # via accelerate
@@ -201,7 +270,9 @@ huggingface-hub==0.26.2
     # via gradio
     # via gradio-client
     # via nabla-vl
+    # via open-clip-torch
     # via peft
+    # via sentence-transformers
     # via timm
     # via tokenizers
     # via transformers
@@ -211,8 +282,12 @@ idna==3.10
     # via jsonschema
     # via requests
     # via yarl
+imagehash==4.3.2
+    # via nabla-vl
 img2dataset==1.45.0
     # via nabla-vl
+importlib-metadata==8.4.0
+    # via opentelemetry-api
 importlib-resources==6.4.5
     # via gradio
 inquirerpy==0.3.4
@@ -227,6 +302,8 @@ ipython==8.29.0
     # via jupyter-console
 ipywidgets==8.1.5
     # via jupyter
+isodate==0.7.2
+    # via azure-storage-blob
 isoduration==20.11.0
     # via jsonschema
 isort==6.0.0
@@ -242,6 +319,9 @@ jinja2==3.1.4
     # via nbconvert
     # via pydeck
     # via torch
+jmespath==1.0.1
+    # via boto3
+    # via botocore
 joblib==1.4.2
     # via scikit-learn
 json5==0.9.25
@@ -303,8 +383,12 @@ langdetect==1.0.9
     # via nabla-vl
 latex2mathml==3.77.0
     # via markdown2
+lazify==0.4.0
+    # via chainlit
 levenshtein==0.26.1
     # via nabla-vl
+literalai==0.1.103
+    # via chainlit
 loguru==0.7.2
     # via nabla-vl
 lxml==5.3.0
@@ -317,6 +401,8 @@ markupsafe==2.1.5
     # via gradio
     # via jinja2
     # via nbconvert
+marshmallow==3.26.1
+    # via dataclasses-json
 matplotlib==3.9.2
     # via gradio
     # via pycocotools
@@ -333,8 +419,6 @@ mdurl==0.1.2
     # via markdown-it-py
 mistune==3.0.2
     # via nbconvert
-mouseinfo==0.1.3
-    # via pyautogui
 mpmath==1.3.0
     # via sympy
 multidict==6.1.0
@@ -345,6 +429,7 @@ multiprocess==0.70.16
     # via evaluate
 mypy-extensions==1.0.0
     # via black
+    # via typing-inspect
 narwhals==1.15.2
     # via altair
 nbclient==0.10.0
@@ -357,6 +442,7 @@ nbformat==5.10.4
     # via nbclient
     # via nbconvert
 nest-asyncio==1.6.0
+    # via chainlit
     # via ipykernel
 networkx==3.3
     # via torch
@@ -378,6 +464,7 @@ numpy==1.26.4
     # via deepspeed
     # via evaluate
     # via gradio
+    # via imagehash
     # via matplotlib
     # via nabla-vl
     # via opencv-python
@@ -387,6 +474,7 @@ numpy==1.26.4
     # via pyarrow
     # via pycocotools
     # via pydeck
+    # via pywavelets
     # via sacrebleu
     # via scikit-learn
     # via scipy
@@ -424,6 +512,11 @@ nvidia-nvjitlink-cu12==12.4.127
     # via torch
 nvidia-nvtx-cu12==12.4.127
     # via torch
+oauthlib==3.2.2
+    # via requests-oauthlib
+    # via tweepy
+open-clip-torch==2.31.0
+    # via nabla-vl
 opencv-python==4.10.0.84
     # via nabla-vl
 opencv-python-headless==4.11.0.86
@@ -432,6 +525,34 @@ opencv-python-headless==4.11.0.86
     # via img2dataset
 openpyxl==3.1.5
     # via nabla-vl
+opentelemetry-api==1.27.0
+    # via opentelemetry-exporter-otlp-proto-grpc
+    # via opentelemetry-exporter-otlp-proto-http
+    # via opentelemetry-instrumentation
+    # via opentelemetry-sdk
+    # via opentelemetry-semantic-conventions
+    # via uptrace
+opentelemetry-exporter-otlp==1.27.0
+    # via uptrace
+opentelemetry-exporter-otlp-proto-common==1.27.0
+    # via opentelemetry-exporter-otlp-proto-grpc
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-grpc==1.27.0
+    # via opentelemetry-exporter-otlp
+opentelemetry-exporter-otlp-proto-http==1.27.0
+    # via opentelemetry-exporter-otlp
+opentelemetry-instrumentation==0.48b0
+    # via uptrace
+opentelemetry-proto==1.27.0
+    # via opentelemetry-exporter-otlp-proto-common
+    # via opentelemetry-exporter-otlp-proto-grpc
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-sdk==1.27.0
+    # via opentelemetry-exporter-otlp-proto-grpc
+    # via opentelemetry-exporter-otlp-proto-http
+    # via uptrace
+opentelemetry-semantic-conventions==0.48b0
+    # via opentelemetry-sdk
 orjson==3.10.7
     # via gradio
 overrides==7.7.0
@@ -440,6 +561,7 @@ packaging==24.1
     # via accelerate
     # via altair
     # via black
+    # via chainlit
     # via datasets
     # via deepspeed
     # via evaluate
@@ -450,6 +572,8 @@ packaging==24.1
     # via jupyter-server
     # via jupyterlab
     # via jupyterlab-server
+    # via literalai
+    # via marshmallow
     # via matplotlib
     # via nbconvert
     # via peft
@@ -478,7 +602,9 @@ pfzy==0.3.4
     # via inquirerpy
 pillow==10.4.0
     # via gradio
+    # via imagehash
     # via matplotlib
+    # via sentence-transformers
     # via streamlit
     # via torchvision
 pip==24.2
@@ -495,8 +621,15 @@ prompt-toolkit==3.0.48
     # via ipython
     # via jupyter-console
 propcache==0.2.0
+    # via aiohttp
     # via yarl
+proto-plus==1.26.1
+    # via google-api-core
 protobuf==4.25.6
+    # via google-api-core
+    # via googleapis-common-protos
+    # via opentelemetry-proto
+    # via proto-plus
     # via streamlit
     # via wandb
 psutil==6.0.0
@@ -518,8 +651,11 @@ pyarrow==15.0.2
     # via streamlit
 pyarrow-hotfix==0.6
     # via datasets
-pyautogui==0.9.54
-    # via nabla-vl
+pyasn1==0.6.1
+    # via pyasn1-modules
+    # via rsa
+pyasn1-modules==0.4.1
+    # via google-auth
 pycocoevalcap==1.2
     # via nabla-vl
 pycocotools==2.0.8
@@ -530,9 +666,11 @@ pycparser==2.22
     # via cffi
 pydantic==2.9.2
     # via albumentations
+    # via chainlit
     # via deepspeed
     # via fastapi
     # via gradio
+    # via literalai
     # via nabla-vl
 pydantic-core==2.23.4
     # via pydantic
@@ -542,51 +680,48 @@ pydub==0.25.1
     # via gradio
 pyflakes==3.2.0
     # via flake8
-pygetwindow==0.0.9
-    # via pyautogui
 pygments==2.18.0
     # via ipython
     # via jupyter-console
     # via markdown2
     # via nbconvert
     # via rich
-pymsgbox==1.0.9
-    # via pyautogui
-pymupdf==1.25.2
+pyjwt==2.10.1
+    # via chainlit
+pymupdf==1.25.3
     # via nabla-vl
 pynvml==11.5.3
     # via nabla-vl
 pyparsing==3.1.4
     # via matplotlib
-pyperclip==1.9.0
-    # via mouseinfo
-pyrect==0.2.0
-    # via pygetwindow
-pyscreeze==1.0.1
-    # via pyautogui
 pytablewriter==1.2.0
     # via nabla-vl
 python-dateutil==2.9.0.post0
     # via arrow
+    # via botocore
     # via jupyter-client
     # via kaggle
     # via matplotlib
     # via pandas
     # via typepy
+python-dotenv==1.0.1
+    # via chainlit
+python-engineio==4.11.2
+    # via python-socketio
 python-json-logger==2.0.7
     # via jupyter-events
-python-multipart==0.0.12
+python-multipart==0.0.18
+    # via chainlit
     # via gradio
 python-slugify==8.0.4
     # via kaggle
-python3-xlib==0.15
-    # via mouseinfo
-    # via pyautogui
-pytweening==1.2.0
-    # via pyautogui
+python-socketio==5.12.1
+    # via chainlit
 pytz==2024.2
     # via pandas
     # via typepy
+pywavelets==1.8.0
+    # via imagehash
 pyyaml==6.0.2
     # via accelerate
     # via albumentations
@@ -612,18 +747,27 @@ referencing==0.35.1
     # via jsonschema-specifications
     # via jupyter-events
 regex==2024.9.11
+    # via open-clip-torch
     # via sacrebleu
     # via transformers
 requests==2.32.3
+    # via azure-core
     # via datasets
     # via evaluate
+    # via google-api-core
+    # via google-cloud-storage
     # via huggingface-hub
     # via jupyterlab-server
     # via kaggle
     # via nabla-vl
+    # via opentelemetry-exporter-otlp-proto-http
+    # via requests-oauthlib
     # via streamlit
     # via transformers
+    # via tweepy
     # via wandb
+requests-oauthlib==2.0.0
+    # via tweepy
 rfc3339-validator==0.1.4
     # via jsonschema
     # via jupyter-events
@@ -637,12 +781,17 @@ rich==13.9.2
 rpds-py==0.20.0
     # via jsonschema
     # via referencing
+rsa==4.9
+    # via google-auth
 ruff==0.6.9
     # via gradio
+s3transfer==0.11.4
+    # via boto3
 sacrebleu==2.4.3
     # via nabla-vl
 safetensors==0.4.5
     # via accelerate
+    # via open-clip-torch
     # via peft
     # via timm
     # via transformers
@@ -650,13 +799,18 @@ schedulefree==1.4
     # via nabla-vl
 scikit-learn==1.5.2
     # via nabla-vl
+    # via sentence-transformers
 scipy==1.14.1
     # via albumentations
+    # via imagehash
     # via scikit-learn
+    # via sentence-transformers
 semantic-version==2.10.0
     # via gradio
 send2trash==1.8.3
     # via jupyter-server
+sentence-transformers==3.4.1
+    # via nabla-vl
 sentencepiece==0.2.0
     # via nabla-vl
 sentry-sdk==2.16.0
@@ -666,6 +820,7 @@ setproctitle==1.3.3
 setuptools==75.3.0
     # via jupyterlab
     # via nabla-vl
+    # via opentelemetry-instrumentation
     # via pytablewriter
     # via torch
     # via wandb
@@ -675,10 +830,13 @@ shortuuid==1.0.13
     # via nabla-vl
 shtab==1.7.1
     # via tyro
+simple-websocket==1.1.0
+    # via python-engineio
 simsimd==6.2.1
     # via albucore
 six==1.16.0
     # via asttokens
+    # via azure-core
     # via bleach
     # via docker-pycreds
     # via fire
@@ -698,7 +856,8 @@ sqlitedict==2.1.0
     # via nabla-vl
 stack-data==0.6.3
     # via ipython
-starlette==0.38.6
+starlette==0.41.3
+    # via chainlit
     # via fastapi
 streamlit==1.40.2
     # via nabla-vl
@@ -708,6 +867,8 @@ svgwrite==1.4.3
     # via wavedrom
 sympy==1.13.1
     # via torch
+syncer==2.0.3
+    # via chainlit
 tabledata==1.3.3
     # via pytablewriter
 tabulate==0.9.0
@@ -728,6 +889,7 @@ threadpoolctl==3.5.0
     # via scikit-learn
 timm==1.0.9
     # via nabla-vl
+    # via open-clip-torch
 tinycss2==1.4.0
     # via nbconvert
 tokenizers==0.21.0
@@ -735,18 +897,23 @@ tokenizers==0.21.0
     # via transformers
 toml==0.10.2
     # via streamlit
+tomli==2.2.1
+    # via chainlit
 tomlkit==0.12.0
     # via gradio
 torch==2.5.1
     # via accelerate
     # via bitsandbytes
     # via deepspeed
+    # via open-clip-torch
     # via peft
+    # via sentence-transformers
     # via timm
     # via torchvision
     # via trl
 torchvision==0.20.1
     # via nabla-vl
+    # via open-clip-torch
     # via timm
 tornado==6.4.1
     # via ipykernel
@@ -764,7 +931,9 @@ tqdm==4.66.6
     # via img2dataset
     # via kaggle
     # via nabla-vl
+    # via open-clip-torch
     # via peft
+    # via sentence-transformers
     # via transformers
 traitlets==5.14.3
     # via comm
@@ -784,10 +953,13 @@ traitlets==5.14.3
 transformers==4.48.2
     # via nabla-vl
     # via peft
+    # via sentence-transformers
     # via trl
 triton==3.1.0
     # via torch
 trl==0.11.2
+    # via nabla-vl
+tweepy==4.15.0
     # via nabla-vl
 typepy==1.3.2
     # via dataproperty
@@ -799,30 +971,42 @@ types-python-dateutil==2.9.0.20241003
     # via arrow
 typing-extensions==4.12.2
     # via altair
+    # via azure-core
+    # via azure-storage-blob
     # via fastapi
     # via gradio
     # via gradio-client
     # via huggingface-hub
+    # via opentelemetry-sdk
     # via pydantic
     # via pydantic-core
     # via streamlit
     # via torch
     # via typer
+    # via typing-inspect
     # via tyro
+typing-inspect==0.9.0
+    # via dataclasses-json
 tyro==0.8.11
     # via trl
 tzdata==2024.2
     # via pandas
+unidic-lite==1.0.8
+    # via nabla-vl
+uptrace==1.27.0
+    # via chainlit
 uri-template==1.3.0
     # via jsonschema
 urllib3==2.2.3
+    # via botocore
     # via gradio
     # via kaggle
     # via requests
     # via sentry-sdk
-uv==0.6.0
+uv==0.6.4
     # via nabla-vl
 uvicorn==0.31.0
+    # via chainlit
     # via gradio
     # via nabla-vl
 wandb==0.16.6
@@ -830,9 +1014,12 @@ wandb==0.16.6
     # via nabla-vl
 watchdog==6.0.0
     # via streamlit
+watchfiles==0.20.0
+    # via chainlit
 wavedrom==2.0.3.post3
     # via markdown2
 wcwidth==0.2.13
+    # via ftfy
     # via prompt-toolkit
 webcolors==24.8.0
     # via jsonschema
@@ -847,8 +1034,15 @@ websockets==12.0
     # via gradio-client
 widgetsnbextension==4.0.13
     # via ipywidgets
+wrapt==1.17.2
+    # via deprecated
+    # via opentelemetry-instrumentation
+wsproto==1.2.0
+    # via simple-websocket
 xxhash==3.5.0
     # via datasets
     # via evaluate
-yarl==1.14.0
+yarl==1.18.3
     # via aiohttp
+zipp==3.21.0
+    # via importlib-metadata
