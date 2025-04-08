@@ -60,8 +60,6 @@ dependencies = [
     'decord>=0.6.0 ; platform_system == "Linux"',
     "pymupdf>=1.25.3",
     "kaggle>=1.6.17",
-    "img2dataset>=1.45.0",
-    "chainlit>=2.3.0",
     "tweepy>=4.15.0",
     "annoy>=1.17.3",
     "open-clip-torch>=2.31.0",
@@ -74,7 +72,7 @@ dependencies = [
     "azure-storage-blob>=12.24.1",
     "aiohttp>=3.11.13",
     "google-cloud-storage>=3.1.0",
-    "vllm>=0.8.2",
+    "vllm>=0.8.3",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
