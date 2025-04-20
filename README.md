@@ -13,6 +13,7 @@
 
 - [x] Publish the NABLA-VL model on Hugging Face
 - [ ] Publish the preprint on arXiv
+- [ ] Release MoE training code
 
 ---
 
@@ -66,6 +67,12 @@ CXX=g++ uv pip install flash-attn --no-build-isolation
     "video": "video.mp4"
   }
 ]
+```
+
+### Training Examples
+
+```bash
+bash examples/sample_config.sh
 ```
 
 ### Evaluation Examples
