@@ -254,8 +254,8 @@ class JMMMU(MMMU):
         "World_History",
     ]
     prefix: Dict[str, str] = {
-        "multiple-choice": "選択肢の中から大文字アルファベットのみで解答してください。",
-        "open": "単文または１単語で解答してください。",
+        "multiple-choice": "与えられた質問に対し、与えられた選択肢の中から該当する選択肢のアルファベットのみで答えてください。",
+        "open": "与えられた質問に答えよ。ただし、解答は1語または1文でできる限り簡潔に行ってください。",
     }
     max_num_images = 7
 
@@ -277,12 +277,12 @@ class JMMMU(MMMU):
                 assert 65 + i < 91
                 choices += chr(65 + i) + ". " + item["options"][i] + "\n"
             instruction = item["question"]
-            instruction += "選択肢:\n"
+            instruction += "\n選択肢:\n"
             instruction += choices
             instruction += self.prefix["multiple-choice"]
         elif item["question_type"] == "open":
             instruction = item["question"]
-            instruction += " "
+            instruction += "\n"
             instruction += self.prefix["open"]
         else:
             raise ValueError
@@ -340,7 +340,7 @@ class BLINK(MMMU):
     ]
     prefix: Dict[str, str] = {
         "multiple-choice": (
-            "Answer with the option's letter from the given choices "
+            "Answer with the option's letter from the given choices directly."
             "directly. Don't include prefix like 'The answer is'"
         ),
     }

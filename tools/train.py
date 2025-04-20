@@ -1,28 +1,22 @@
-import contextlib
-import functools
-import inspect
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
 
-import torch
 import torch.distributed as dist
+import wandb
 from deepspeed.utils import logger
 from torch.utils.data import RandomSampler, Sampler
 from transformers import HfArgumentParser, Trainer, TrainingArguments
-from transformers.utils import is_accelerate_available
 
 import nabla_vl
 import nabla_vl.transforms
-import wandb
 from nabla_vl.sampler import VisionCompatibleLengthGroupedSampler
 
 
 class TrainerWorkaround(Trainer):
     def create_optimizer(self):
         self.optimizer = super().create_optimizer()
-        # Scheduler-free optimizers need to call .train() or .eval() before first .step()
+        # Scheduler-free optimizers need to call .train() or .eval() before first .step()  # NOQA
         if hasattr(self.optimizer, "train") is True:
             self.optimizer.train()
         return self.optimizer

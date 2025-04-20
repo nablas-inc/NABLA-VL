@@ -191,9 +191,10 @@ fastrlock==0.8.3
     # via cupy-cuda12x
 ffmpy==0.4.0
     # via gradio
-filelock==3.16.1
+filelock==3.18.0
     # via datasets
     # via huggingface-hub
+    # via nabla-vl
     # via ray
     # via torch
     # via transformers
@@ -268,7 +269,7 @@ httpx==0.27.2
     # via jupyterlab
     # via nabla-vl
     # via openai
-huggingface-hub==0.30.1
+huggingface-hub==0.30.2
     # via accelerate
     # via datasets
     # via evaluate
@@ -295,8 +296,6 @@ importlib-metadata==8.4.0
     # via vllm
 importlib-resources==6.4.5
     # via gradio
-inquirerpy==0.3.4
-    # via huggingface-hub
 interegular==0.3.3
     # via lm-format-enforcer
     # via outlines
@@ -612,8 +611,6 @@ peft==0.13.1
     # via nabla-vl
 pexpect==4.9.0
     # via ipython
-pfzy==0.3.4
-    # via inquirerpy
 pillow==10.4.0
     # via gradio
     # via imagehash
@@ -637,7 +634,6 @@ prometheus-client==0.21.0
 prometheus-fastapi-instrumentator==7.1.0
     # via vllm
 prompt-toolkit==3.0.48
-    # via inquirerpy
     # via ipython
     # via jupyter-console
 propcache==0.2.0
@@ -714,7 +710,7 @@ pygments==2.18.0
     # via markdown2
     # via nbconvert
     # via rich
-pymupdf==1.25.3
+pymupdf==1.25.5
     # via nabla-vl
 pynvml==11.5.3
     # via nabla-vl
@@ -1053,7 +1049,7 @@ urllib3==2.2.3
     # via kaggle
     # via requests
     # via sentry-sdk
-uv==0.6.13
+uv==0.6.14
     # via nabla-vl
 uvicorn==0.31.0
     # via fastapi

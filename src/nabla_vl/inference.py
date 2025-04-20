@@ -93,6 +93,8 @@ def run_model_with_stream(
     *,
     images: Optional[List[Image.Image]] = None,
     device: Any = "cuda",
+    max_new_tokens: int = 512,
+    replace_image_tokens: bool = True,
 ) -> None:
     streamer = TextStreamer(
         tokenizer,
@@ -102,7 +104,12 @@ def run_model_with_stream(
     batch = ({"images": images},)
     batch = data_pipeline(batch)
     # Multi-images are arranged into a single image
-    batch["input_ids"] = get_input_ids(tokenizer, instruction, 1)
+    batch["input_ids"] = get_input_ids(
+        tokenizer,
+        instruction,
+        1,
+        replace_image_tokens=replace_image_tokens,
+    )
     batch["input_ids"] = batch["input_ids"].to(device)
     batch["attention_mask"] = batch["input_ids"].ne(tokenizer.pad_token_id)
     # TODO: Rename it
@@ -112,7 +119,7 @@ def run_model_with_stream(
     with torch.autocast(device), torch.inference_mode():
         model.generate(
             **batch,
-            max_new_tokens=1024,
+            max_new_tokens=max_new_tokens,
             num_beams=1,
             streamer=streamer,
         )
