@@ -129,6 +129,7 @@ instruction = "この画像について教えてください！"
 images = []
 urls = [
     "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/bee.jpg",
+    # Add items here to input multiple images
 ]
 for url in urls:
     images.append(
