@@ -94,7 +94,7 @@ from nabla_vl.processor import NablaVLProcessor
 from transformers import pipeline
 
 TASK = "image-text-to-text"
-MODEL = "nablasinc/NABLA-VL"
+MODEL = "nablasinc/NABLA-VL"  # Or where the checkpoint gets saved when you fine-tune a model
 DEVICE = "cuda"
 
 processor = NablaVLProcessor.from_pretrained(MODEL, use_fast=False)
@@ -123,13 +123,14 @@ from nabla_vl.io import load_image
 from nabla_vl.model import NablaVLForCausalLM
 from nabla_vl.transforms import build_data_pipeline
 
-MODEL = "nablasinc/NABLA-VL"
+MODEL = "nablasinc/NABLA-VL"  # Or where the checkpoint gets saved when you fine-tune a model
 DEVICE = "cuda"
 
 model = NablaVLForCausalLM.from_pretrained(MODEL, torch_dtype=torch.bfloat16, resume_download=True)
 model.to(DEVICE)
 model.eval()
 tokenizer = AutoTokenizer.from_pretrained(MODEL, use_fast=False)
+tokenizer.chat_template = CHAT_TEMPLATE_WITHOUT_SYSTEM_MESSAGE
 data_pipeline = build_data_pipeline(model.config, tokenizer)
 instruction = "この画像について教えてください！"
 images = []
