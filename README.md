@@ -49,11 +49,13 @@ CXX=g++ uv pip install flash-attn --no-build-isolation
 ```jsonc
 [
   {
+    // "image": ["image_0.jpg", "image_1.jpg"]  // For multiple image input
+    // "video": "video.mp4"  // For video input
     "image": "birds.jpg",
     "conversations": [
       {
         "from": "human",
-        "value": "<image>\nHow many birds are there?"
+        "value": "How many birds are there?"  // <image> token is prepended automatically during training
       },
       {
         "from": "gpt",
@@ -61,12 +63,8 @@ CXX=g++ uv pip install flash-attn --no-build-isolation
       }
     ]
   },
-  {
-    "image": ["image_0.jpg", "image_1.jpg"]
-  },
-  {
-    "video": "video.mp4"
-  }
+  // Other examples skipped...
+  // You can add more samples below!
 ]
 ```
 
