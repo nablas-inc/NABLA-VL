@@ -3,7 +3,8 @@ name = "nabla_vl"
 version = "0.1.0"
 description = "Japanese Vision-Language Model (VLM)"
 authors = [
-    { name = "Haoxiang Shi", email = "haoxiang.shi@example.com" },
+    { name = "Haoxiang Shi", email = "haoxiang.shi@nablas.com" },
+    { name = "Maxime Alvarez", email = "maxime.alvarez@nablas.com" },
     { name = "Takuya Shintate", email = "shintate@nablas.com" },
     { name = "Zijie Jiang", email = "zijie.jiang@nablas.com" }
 ]
