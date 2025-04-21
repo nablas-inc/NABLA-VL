@@ -14,6 +14,7 @@
 - [x] Publish the NABLA-VL model on Hugging Face
 - [ ] Publish the preprint on arXiv
 - [ ] Release MoE training code
+- [ ] Integrate vision token reduction methods
 
 ---
 
