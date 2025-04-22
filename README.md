@@ -1,82 +1,92 @@
 # NABLA-VL
 
-[![Hugging Face](https://img.shields.io/badge/HuggingFace-Model-orange?logo=huggingface)](https://huggingface.co/nablasinc/NABLA-VL-15B) [![arXiv](https://img.shields.io/badge/arXiv-2301.12345-B31B1B.svg)](https://arxiv.org/abs/2301.12345)
+[![Hugging Face](https://img.shields.io/badge/HuggingFace-Model-orange?logo=huggingface)](https://huggingface.co/nablasinc/NABLA-VL)
+[![arXiv](https://img.shields.io/badge/arXiv-2301.12345-B31B1B.svg)](https://arxiv.org/abs/2301.12345)
 
-## Installation
+> The technical report will be available soon!
 
-### Rye
+**NABLA-VL** is a Japanese Vision-Language Model (VLM) developed by NABLAS. It supports inputs of images, multiple images, and videos, enabling comprehensive multimodal understanding and generation.
 
-```console
+---
+
+## ✅ To-Do List
+
+- [x] Publish the NABLA-VL model on Hugging Face
+- [ ] Publish the preprint on arXiv
+- [ ] Release MoE training code
+- [ ] Integrate vision token reduction methods
+- [ ] Integrate vLLM into codebase to serve developed models
+
+---
+
+## 🚀 Installation
+
+### Using Rye
+
+```bash
 rye sync
-# Activate virtual environment
+# Activate the virtual environment
 source .venv/bin/activate
 ```
 
-### FlashAttention
+### Installing FlashAttention
 
-To enable `--attn_implementation flash_attention_2`, you need to install `flash-attn`.
+To enable `--attn_implementation flash_attention_2`, install `flash-attn`:
 
-```console
+```bash
 rye add uv
 uv pip install torch
 CXX=g++ uv pip install flash-attn --no-build-isolation
 ```
 
-## Getting Started
+---
 
-### Training
+## 📚 Usage
 
-<details>
-<summary>Data Format</summary>
+### Training Data Format
+
+​If you would like to see a concrete example, please refer to `examples/sample_data.json`.
 
 ```jsonc
 [
-    // ...
-    {
-        "image": "birds.jpg",  // {image_dir}/birds.jpg will be loaded during training (image_dir comes from config).
-        "conversations": [  // conversations is pair(s) of input(s) and output(s).
-            {
-                "from": "human",
-                "value": "<image>\nHow many birds are there?"  // This is prompt. You can drop <image>\n. In that case, it automatically prepends <image>\n.
-            },
-            {
-                "from": "gpt",
-                "value": "9"  // This is label.
-            }
-        ]
-    },
-    {
-        "image": ["image_0.jpg", "image_1.jpg"],  // Use list for multi-image input.
-        // ...
-    },
-    {
-        "video": "video.mp4",  // Use video key if input is video.
-        // ...
-    },
-    // ...
+  {
+    // "image": ["image_0.jpg", "image_1.jpg"]  // For multiple image input
+    // "video": "video.mp4"  // For video input
+    "image": "birds.jpg",
+    "conversations": [
+      {
+        "from": "human",
+        "value": "How many birds are there?"  // <image> token is prepended automatically during training
+      },
+      {
+        "from": "gpt",
+        "value": "9"
+      }
+    ]
+  },
+  // Other examples skipped...
+  // You can add more samples below!
 ]
 ```
 
-</details>
+### Training Examples
 
-### Evaluation
-
-<details>
-<summary>Example</summary>
-
-```console
-python tools/evaluate.py --benchmark-name MMMU --split validation
-python tools/evaluate.py --benchmark-name JMMMU --split test
-python tools/evaluate.py --benchmark-name MMStar --split val
-python tools/evaluate.py --benchmark-name BLINK --split val
+```bash
+bash examples/sample_config.sh
 ```
 
-</details>
+### Evaluation Examples
 
-### Inference
+```bash
+python tools/evaluate.py --benchmark-name MMMU --split validation --device cuda
+python tools/evaluate.py --benchmark-name JMMMU --split test --device cuda
+python tools/evaluate.py --benchmark-name MMStar --split val --device cuda
+python tools/evaluate.py --benchmark-name BLINK --split val --device cuda
+```
 
-<details>
-<summary>🤗 Pipelines</summary>
+### Inference Examples
+
+#### Using 🤗 Transformers Pipeline
 
 ```python
 import nabla_vl
@@ -84,11 +94,9 @@ import torch
 from nabla_vl.processor import NablaVLProcessor
 from transformers import pipeline
 
-
 TASK = "image-text-to-text"
-MODEL = "nablasinc/NABLA-VL-15B"
+MODEL = "nablasinc/NABLA-VL"  # Or where the checkpoint gets saved when you fine-tune a model
 DEVICE = "cuda"
-
 
 processor = NablaVLProcessor.from_pretrained(MODEL, use_fast=False)
 pipe = pipeline(TASK, MODEL, processor=processor, torch_dtype=torch.bfloat16)
@@ -101,10 +109,11 @@ with torch.autocast(DEVICE), torch.inference_mode():
 print(response)
 ```
 
+#### Using Custom Inference Script
+
 ```python
 import requests
 from PIL import Image
-
 import numpy as np
 import torch
 from transformers import AutoModel, AutoTokenizer
@@ -115,18 +124,20 @@ from nabla_vl.io import load_image
 from nabla_vl.model import NablaVLForCausalLM
 from nabla_vl.transforms import build_data_pipeline
 
-MODEL = "nablasinc/NABLA-VL-15B"
+MODEL = "nablasinc/NABLA-VL"  # Or where the checkpoint gets saved when you fine-tune a model
+DEVICE = "cuda"
 
-
-model = NablaVLForCausalLM.from_pretrained(MODEL, torch_dtype=torch.bfloat16)
-model.to("cuda")
+model = NablaVLForCausalLM.from_pretrained(MODEL, torch_dtype=torch.bfloat16, resume_download=True)
+model.to(DEVICE)
 model.eval()
 tokenizer = AutoTokenizer.from_pretrained(MODEL, use_fast=False)
+tokenizer.chat_template = CHAT_TEMPLATE_WITHOUT_SYSTEM_MESSAGE
 data_pipeline = build_data_pipeline(model.config, tokenizer)
 instruction = "この画像について教えてください！"
 images = []
 urls = [
     "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/bee.jpg",
+    # Add items here to input multiple images
 ]
 for url in urls:
     images.append(
@@ -145,7 +156,20 @@ run_model_with_stream(
     data_pipeline,
     instruction,
     images=images,
+    device=DEVICE,
 )
 ```
 
-</details>
+---
+
+## 📄 License
+
+This project is licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for details.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open issues or submit pull requests for improvements and fixes.
+
+---

@@ -1,11 +1,6 @@
 import tokenizers
 from deepspeed.utils import logger
-from transformers import (
-    AutoConfig,
-    AutoTokenizer,
-    PreTrainedTokenizer,
-    TrainingArguments,
-)
+from transformers import AutoTokenizer, PreTrainedTokenizer, TrainingArguments
 
 from .constants import (
     CHAT_TEMPLATE_WITHOUT_SYSTEM_MESSAGE,
