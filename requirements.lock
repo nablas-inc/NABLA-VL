@@ -87,6 +87,8 @@ boto3==1.37.10
 botocore==1.37.10
     # via boto3
     # via s3transfer
+build==1.2.2.post1
+    # via nabla-vl
 cachetools==5.5.0
     # via google-auth
     # via streamlit
@@ -574,6 +576,7 @@ packaging==24.1
     # via accelerate
     # via altair
     # via black
+    # via build
     # via datasets
     # via deepspeed
     # via evaluate
@@ -716,6 +719,8 @@ pynvml==11.5.3
     # via nabla-vl
 pyparsing==3.1.4
     # via matplotlib
+pyproject-hooks==1.2.0
+    # via build
 pytablewriter==1.2.0
     # via nabla-vl
 python-dateutil==2.9.0.post0
