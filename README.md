@@ -15,6 +15,7 @@
 - [ ] Publish the preprint on arXiv
 - [ ] Release MoE training code
 - [ ] Integrate vision token reduction methods
+- [ ] Integrate vLLM into codebase to serve developed models
 
 ---
 
@@ -80,7 +81,7 @@ bash examples/sample_config.sh
 python tools/evaluate.py --benchmark-name MMMU --split validation --device cuda
 python tools/evaluate.py --benchmark-name JMMMU --split test --device cuda
 python tools/evaluate.py --benchmark-name MMStar --split val --device cuda
-python tools/evaluate.py --benchmark-name BLINK --split val --device cuda:1
+python tools/evaluate.py --benchmark-name BLINK --split val --device cuda
 ```
 
 ### Inference Examples
@@ -132,10 +133,10 @@ model.eval()
 tokenizer = AutoTokenizer.from_pretrained(MODEL, use_fast=False)
 tokenizer.chat_template = CHAT_TEMPLATE_WITHOUT_SYSTEM_MESSAGE
 data_pipeline = build_data_pipeline(model.config, tokenizer)
-instruction = "この画像が撮影された会社を推論した上で画像について説明してください"
+instruction = "この画像について教えてください！"
 images = []
 urls = [
-    "https://static.wixstatic.com/media/0f80f0_4b205ef1392046c8a36085073766981d~mv2.png/v1/fill/w_1461,h_800,al_c,q_90,enc_avif,quality_auto/0f80f0_4b205ef1392046c8a36085073766981d~mv2.png",
+    "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/bee.jpg",
     # Add items here to input multiple images
 ]
 for url in urls:
