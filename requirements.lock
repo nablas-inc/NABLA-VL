@@ -21,26 +21,17 @@ aiohappyeyeballs==2.4.3
 aiohttp==3.11.13
     # via datasets
     # via fsspec
-    # via nabla-vl
-    # via vllm
 aiosignal==1.3.1
     # via aiohttp
-    # via ray
-airportsdata==20250224
-    # via outlines
 altair==5.5.0
     # via streamlit
 annotated-types==0.7.0
     # via pydantic
-annoy==1.17.3
-    # via nabla-vl
 anyio==4.6.0
     # via gradio
     # via httpx
     # via jupyter-server
-    # via openai
     # via starlette
-    # via watchfiles
 appdirs==1.4.4
     # via wandb
 argon2-cffi==23.1.0
@@ -51,22 +42,14 @@ aria2==0.0.1b0
     # via nabla-vl
 arrow==1.3.0
     # via isoduration
-astor==0.8.1
-    # via depyf
 asttokens==2.4.1
     # via stack-data
 async-lru==2.0.4
     # via jupyterlab
-asyncpg==0.30.0
-    # via nabla-vl
 attrs==24.2.0
     # via aiohttp
     # via jsonschema
     # via referencing
-azure-core==1.32.0
-    # via azure-storage-blob
-azure-storage-blob==12.24.1
-    # via nabla-vl
 babel==2.16.0
     # via jupyterlab-server
 beautifulsoup4==4.12.3
@@ -75,24 +58,15 @@ bitsandbytes==0.45.2
     # via nabla-vl
 black==25.1.0
     # via nabla-vl
-blake3==1.0.4
-    # via vllm
 bleach==6.1.0
     # via kaggle
     # via nbconvert
 blinker==1.9.0
     # via streamlit
-boto3==1.37.10
-    # via nabla-vl
-botocore==1.37.10
-    # via boto3
-    # via s3transfer
 build==1.2.2.post1
     # via nabla-vl
 cachetools==5.5.0
-    # via google-auth
     # via streamlit
-    # via vllm
 certifi==2024.8.30
     # via httpcore
     # via httpx
@@ -101,7 +75,6 @@ certifi==2024.8.30
     # via sentry-sdk
 cffi==1.17.1
     # via argon2-cffi-bindings
-    # via cryptography
 chardet==5.2.0
     # via mbstrdecoder
 charset-normalizer==3.4.0
@@ -109,28 +82,17 @@ charset-normalizer==3.4.0
 click==8.1.8
     # via black
     # via nabla-vl
-    # via ray
-    # via rich-toolkit
     # via streamlit
     # via typer
     # via uvicorn
     # via wandb
-cloudpickle==3.1.1
-    # via outlines
-    # via vllm
 colorama==0.4.6
     # via sacrebleu
 comm==0.2.2
     # via ipykernel
     # via ipywidgets
-compressed-tensors==0.9.2
-    # via vllm
 contourpy==1.3.0
     # via matplotlib
-cryptography==44.0.2
-    # via azure-storage-blob
-cupy-cuda12x==13.4.1
-    # via ray
 cycler==0.12.1
     # via matplotlib
 dataproperty==1.0.1
@@ -150,19 +112,10 @@ deepspeed==0.15.1
     # via nabla-vl
 defusedxml==0.7.1
     # via nbconvert
-depyf==0.18.0
-    # via vllm
 dill==0.3.8
     # via datasets
-    # via depyf
     # via evaluate
     # via multiprocess
-diskcache==5.6.3
-    # via outlines
-distro==1.9.0
-    # via openai
-dnspython==2.7.0
-    # via email-validator
 docker-pycreds==0.4.0
     # via wandb
 docstring-parser==0.16
@@ -170,11 +123,8 @@ docstring-parser==0.16
 einops==0.8.0
     # via einops-exts
     # via nabla-vl
-    # via vllm
 einops-exts==0.0.4
     # via nabla-vl
-email-validator==2.2.0
-    # via fastapi
 et-xmlfile==2.0.0
     # via openpyxl
 evaluate==0.4.3
@@ -184,23 +134,15 @@ executing==2.1.0
 fastapi==0.115.9
     # via gradio
     # via nabla-vl
-    # via vllm
-fastapi-cli==0.0.7
-    # via fastapi
 fastjsonschema==2.20.0
     # via nbformat
-fastrlock==0.8.3
-    # via cupy-cuda12x
 ffmpy==0.4.0
     # via gradio
 filelock==3.18.0
     # via datasets
     # via huggingface-hub
-    # via nabla-vl
-    # via ray
     # via torch
     # via transformers
-    # via vllm
 flake8==7.1.1
     # via nabla-vl
 fonttools==4.54.1
@@ -210,42 +152,17 @@ fqdn==1.5.1
 frozenlist==1.4.1
     # via aiohttp
     # via aiosignal
-    # via ray
 fsspec==2024.2.0
     # via datasets
     # via evaluate
     # via gradio-client
     # via huggingface-hub
     # via torch
-ftfy==6.3.1
-    # via open-clip-torch
-fugashi==1.4.0
-    # via nabla-vl
-gguf==0.10.0
-    # via vllm
 gitdb==4.0.11
     # via gitpython
 gitpython==3.1.43
     # via streamlit
     # via wandb
-google-api-core==2.24.2
-    # via google-cloud-core
-    # via google-cloud-storage
-google-auth==2.38.0
-    # via google-api-core
-    # via google-cloud-core
-    # via google-cloud-storage
-google-cloud-core==2.4.3
-    # via google-cloud-storage
-google-cloud-storage==3.1.0
-    # via nabla-vl
-google-crc32c==1.6.0
-    # via google-cloud-storage
-    # via google-resumable-media
-google-resumable-media==2.7.2
-    # via google-cloud-storage
-googleapis-common-protos==1.68.0
-    # via google-api-core
 gradio==4.44.1
     # via nabla-vl
 gradio-client==1.3.0
@@ -256,21 +173,15 @@ h11==0.14.0
     # via uvicorn
 hf-transfer==0.1.8
     # via nabla-vl
-hf-xet==1.0.2
-    # via huggingface-hub
 hjson==3.1.0
     # via deepspeed
 httpcore==1.0.6
     # via httpx
-httptools==0.6.4
-    # via uvicorn
 httpx==0.27.2
-    # via fastapi
     # via gradio
     # via gradio-client
     # via jupyterlab
     # via nabla-vl
-    # via openai
 huggingface-hub==0.30.2
     # via accelerate
     # via datasets
@@ -278,30 +189,18 @@ huggingface-hub==0.30.2
     # via gradio
     # via gradio-client
     # via nabla-vl
-    # via open-clip-torch
     # via peft
-    # via sentence-transformers
     # via timm
     # via tokenizers
     # via transformers
-    # via vllm
 idna==3.10
     # via anyio
-    # via email-validator
     # via httpx
     # via jsonschema
     # via requests
     # via yarl
-imagehash==4.3.2
-    # via nabla-vl
-importlib-metadata==8.4.0
-    # via vllm
 importlib-resources==6.4.5
     # via gradio
-interegular==0.3.3
-    # via lm-format-enforcer
-    # via outlines
-    # via outlines-core
 ipykernel==6.29.5
     # via jupyter
     # via jupyter-console
@@ -312,8 +211,6 @@ ipython==8.29.0
     # via jupyter-console
 ipywidgets==8.1.5
     # via jupyter
-isodate==0.7.2
-    # via azure-storage-blob
 isoduration==20.11.0
     # via jsonschema
 isort==6.0.0
@@ -322,20 +219,13 @@ jedi==0.19.1
     # via ipython
 jinja2==3.1.6
     # via altair
-    # via fastapi
     # via gradio
     # via jupyter-server
     # via jupyterlab
     # via jupyterlab-server
     # via nbconvert
-    # via outlines
     # via pydeck
     # via torch
-jiter==0.9.0
-    # via openai
-jmespath==1.0.1
-    # via boto3
-    # via botocore
 joblib==1.4.2
     # via scikit-learn
 json5==0.9.25
@@ -346,11 +236,7 @@ jsonschema==4.23.0
     # via altair
     # via jupyter-events
     # via jupyterlab-server
-    # via mistral-common
     # via nbformat
-    # via outlines
-    # via outlines-core
-    # via ray
 jsonschema-specifications==2024.10.1
     # via jsonschema
 jupyter==1.1.1
@@ -399,19 +285,10 @@ kiwisolver==1.4.7
     # via matplotlib
 langdetect==1.0.9
     # via nabla-vl
-lark==1.2.2
-    # via outlines
-    # via vllm
 latex2mathml==3.77.0
     # via markdown2
 levenshtein==0.26.1
     # via nabla-vl
-llguidance==0.7.13
-    # via vllm
-llvmlite==0.44.0
-    # via numba
-lm-format-enforcer==0.10.11
-    # via vllm
 loguru==0.7.2
     # via nabla-vl
 lxml==5.3.0
@@ -438,16 +315,10 @@ mccabe==0.7.0
     # via flake8
 mdurl==0.1.2
     # via markdown-it-py
-mistral-common==1.5.4
-    # via vllm
 mistune==3.0.2
     # via nbconvert
 mpmath==1.3.0
     # via sympy
-msgpack==1.1.0
-    # via ray
-msgspec==0.19.0
-    # via vllm
 multidict==6.1.0
     # via aiohttp
     # via yarl
@@ -456,8 +327,6 @@ multiprocess==0.70.16
     # via evaluate
 mypy-extensions==1.0.0
     # via black
-nanobind==2.6.1
-    # via xgrammar
 narwhals==1.15.2
     # via altair
 nbclient==0.10.0
@@ -471,45 +340,32 @@ nbformat==5.10.4
     # via nbconvert
 nest-asyncio==1.6.0
     # via ipykernel
-    # via outlines
 networkx==3.3
     # via torch
 ninja==1.11.1.1
     # via deepspeed
-    # via vllm
-    # via xgrammar
 notebook==7.2.2
     # via jupyter
 notebook-shim==0.2.4
     # via jupyterlab
     # via notebook
-numba==0.61.0
-    # via vllm
 numpy==1.26.4
     # via accelerate
     # via bitsandbytes
     # via contourpy
-    # via cupy-cuda12x
     # via datasets
     # via decord
     # via deepspeed
     # via evaluate
-    # via gguf
     # via gradio
-    # via imagehash
     # via matplotlib
-    # via mistral-common
     # via nabla-vl
-    # via numba
     # via opencv-python
-    # via opencv-python-headless
-    # via outlines
     # via pandas
     # via peft
     # via pyarrow
     # via pycocotools
     # via pydeck
-    # via pywavelets
     # via sacrebleu
     # via scikit-learn
     # via scipy
@@ -517,8 +373,6 @@ numpy==1.26.4
     # via torchvision
     # via transformers
     # via trl
-    # via vllm
-    # via xformers
 nvidia-cublas-cu12==12.4.5.8
     # via nvidia-cudnn-cu12
     # via nvidia-cusolver-cu12
@@ -550,26 +404,12 @@ nvidia-nvjitlink-cu12==12.4.127
     # via torch
 nvidia-nvtx-cu12==12.4.127
     # via torch
-oauthlib==3.2.2
-    # via requests-oauthlib
-    # via tweepy
-open-clip-torch==2.31.0
-    # via nabla-vl
-openai==1.71.0
-    # via vllm
 opencv-python==4.10.0.84
     # via nabla-vl
-opencv-python-headless==4.11.0.86
-    # via mistral-common
-    # via vllm
 openpyxl==3.1.5
     # via nabla-vl
 orjson==3.10.7
     # via gradio
-outlines==0.1.11
-    # via vllm
-outlines-core==0.1.26
-    # via outlines
 overrides==7.7.0
     # via jupyter-server
 packaging==24.1
@@ -587,11 +427,9 @@ packaging==24.1
     # via jupyter-server
     # via jupyterlab
     # via jupyterlab-server
-    # via lm-format-enforcer
     # via matplotlib
     # via nbconvert
     # via peft
-    # via ray
     # via streamlit
     # via transformers
     # via typepy
@@ -604,8 +442,6 @@ pandocfilters==1.5.1
     # via nbconvert
 parso==0.8.4
     # via jedi
-partial-json-parser==0.2.1.1.post5
-    # via vllm
 pathspec==0.12.1
     # via black
 pathvalidate==3.2.1
@@ -616,13 +452,9 @@ pexpect==4.9.0
     # via ipython
 pillow==10.4.0
     # via gradio
-    # via imagehash
     # via matplotlib
-    # via mistral-common
-    # via sentence-transformers
     # via streamlit
     # via torchvision
-    # via vllm
 pip==24.2
     # via nabla-vl
 platformdirs==4.3.6
@@ -632,32 +464,20 @@ portalocker==2.10.1
     # via sacrebleu
 prometheus-client==0.21.0
     # via jupyter-server
-    # via prometheus-fastapi-instrumentator
-    # via vllm
-prometheus-fastapi-instrumentator==7.1.0
-    # via vllm
 prompt-toolkit==3.0.48
     # via ipython
     # via jupyter-console
 propcache==0.2.0
     # via aiohttp
     # via yarl
-proto-plus==1.26.1
-    # via google-api-core
 protobuf==4.25.6
-    # via google-api-core
-    # via googleapis-common-protos
-    # via proto-plus
-    # via ray
     # via streamlit
-    # via vllm
     # via wandb
 psutil==6.0.0
     # via accelerate
     # via deepspeed
     # via ipykernel
     # via peft
-    # via vllm
     # via wandb
 ptyprocess==0.7.0
     # via pexpect
@@ -666,39 +486,24 @@ pure-eval==0.2.3
     # via stack-data
 py-cpuinfo==9.0.0
     # via deepspeed
-    # via vllm
 pyarrow==15.0.2
     # via datasets
     # via streamlit
 pyarrow-hotfix==0.6
     # via datasets
-pyasn1==0.6.1
-    # via pyasn1-modules
-    # via rsa
-pyasn1-modules==0.4.1
-    # via google-auth
 pycocoevalcap==1.2
     # via nabla-vl
 pycocotools==2.0.8
     # via pycocoevalcap
 pycodestyle==2.12.1
     # via flake8
-pycountry==24.6.1
-    # via outlines
 pycparser==2.22
     # via cffi
 pydantic==2.9.2
-    # via compressed-tensors
     # via deepspeed
     # via fastapi
     # via gradio
-    # via lm-format-enforcer
-    # via mistral-common
     # via nabla-vl
-    # via openai
-    # via outlines
-    # via vllm
-    # via xgrammar
 pydantic-core==2.23.4
     # via pydantic
 pydeck==0.9.1
@@ -725,41 +530,29 @@ pytablewriter==1.2.0
     # via nabla-vl
 python-dateutil==2.9.0.post0
     # via arrow
-    # via botocore
     # via jupyter-client
     # via kaggle
     # via matplotlib
     # via pandas
     # via typepy
-python-dotenv==1.0.1
-    # via uvicorn
 python-json-logger==2.0.7
     # via jupyter-events
-    # via vllm
 python-multipart==0.0.18
-    # via fastapi
     # via gradio
 python-slugify==8.0.4
     # via kaggle
 pytz==2024.2
     # via pandas
     # via typepy
-pywavelets==1.8.0
-    # via imagehash
 pyyaml==6.0.2
     # via accelerate
     # via datasets
-    # via gguf
     # via gradio
     # via huggingface-hub
     # via jupyter-events
-    # via lm-format-enforcer
     # via peft
-    # via ray
     # via timm
     # via transformers
-    # via uvicorn
-    # via vllm
     # via wandb
     # via wavedrom
 pyzmq==26.2.0
@@ -767,43 +560,25 @@ pyzmq==26.2.0
     # via jupyter-client
     # via jupyter-console
     # via jupyter-server
-    # via vllm
 rapidfuzz==3.11.0
     # via levenshtein
-ray==2.43.0
-    # via vllm
 referencing==0.35.1
     # via jsonschema
     # via jsonschema-specifications
     # via jupyter-events
-    # via outlines
 regex==2024.9.11
-    # via open-clip-torch
     # via sacrebleu
-    # via tiktoken
     # via transformers
 requests==2.32.3
-    # via azure-core
     # via datasets
     # via evaluate
-    # via google-api-core
-    # via google-cloud-storage
     # via huggingface-hub
     # via jupyterlab-server
     # via kaggle
-    # via mistral-common
     # via nabla-vl
-    # via outlines
-    # via ray
-    # via requests-oauthlib
     # via streamlit
-    # via tiktoken
     # via transformers
-    # via tweepy
-    # via vllm
     # via wandb
-requests-oauthlib==2.0.0
-    # via tweepy
 rfc3339-validator==0.1.4
     # via jsonschema
     # via jupyter-events
@@ -811,26 +586,18 @@ rfc3986-validator==0.1.1
     # via jsonschema
     # via jupyter-events
 rich==13.9.2
-    # via rich-toolkit
     # via streamlit
     # via typer
     # via tyro
-rich-toolkit==0.14.1
-    # via fastapi-cli
 rpds-py==0.20.0
     # via jsonschema
     # via referencing
-rsa==4.9
-    # via google-auth
 ruff==0.6.9
     # via gradio
-s3transfer==0.11.4
-    # via boto3
 sacrebleu==2.4.3
     # via nabla-vl
 safetensors==0.4.5
     # via accelerate
-    # via open-clip-torch
     # via peft
     # via timm
     # via transformers
@@ -838,23 +605,14 @@ schedulefree==1.4
     # via nabla-vl
 scikit-learn==1.5.2
     # via nabla-vl
-    # via sentence-transformers
 scipy==1.14.1
-    # via imagehash
     # via scikit-learn
-    # via sentence-transformers
-    # via vllm
 semantic-version==2.10.0
     # via gradio
 send2trash==1.8.3
     # via jupyter-server
-sentence-transformers==3.4.1
-    # via nabla-vl
 sentencepiece==0.2.0
-    # via mistral-common
     # via nabla-vl
-    # via vllm
-    # via xgrammar
 sentry-sdk==2.16.0
     # via wandb
 setproctitle==1.3.3
@@ -864,7 +622,6 @@ setuptools==75.3.0
     # via nabla-vl
     # via pytablewriter
     # via torch
-    # via vllm
     # via wandb
 shellingham==1.5.4
     # via typer
@@ -874,21 +631,18 @@ shtab==1.7.1
     # via tyro
 six==1.16.0
     # via asttokens
-    # via azure-core
     # via bleach
     # via docker-pycreds
     # via kaggle
     # via langdetect
     # via python-dateutil
     # via rfc3339-validator
-    # via vllm
     # via wavedrom
 smmap==5.0.1
     # via gitdb
 sniffio==1.3.1
     # via anyio
     # via httpx
-    # via openai
 soupsieve==2.6
     # via beautifulsoup4
 sqlitedict==2.1.0
@@ -897,7 +651,6 @@ stack-data==0.6.3
     # via ipython
 starlette==0.41.3
     # via fastapi
-    # via prometheus-fastapi-instrumentator
 streamlit==1.40.2
     # via nabla-vl
 svgwrite==1.4.3
@@ -920,19 +673,13 @@ text-unidecode==1.3
     # via python-slugify
 threadpoolctl==3.5.0
     # via scikit-learn
-tiktoken==0.9.0
-    # via mistral-common
-    # via vllm
-    # via xgrammar
 timm==1.0.9
     # via nabla-vl
-    # via open-clip-torch
 tinycss2==1.4.0
     # via nbconvert
 tokenizers==0.21.0
     # via nabla-vl
     # via transformers
-    # via vllm
 toml==0.10.2
     # via streamlit
 tomlkit==0.12.0
@@ -940,26 +687,14 @@ tomlkit==0.12.0
 torch==2.6.0
     # via accelerate
     # via bitsandbytes
-    # via compressed-tensors
     # via deepspeed
-    # via open-clip-torch
-    # via outlines
     # via peft
-    # via sentence-transformers
     # via timm
-    # via torchaudio
     # via torchvision
     # via trl
-    # via vllm
-    # via xformers
-    # via xgrammar
-torchaudio==2.6.0
-    # via vllm
 torchvision==0.21.0
     # via nabla-vl
-    # via open-clip-torch
     # via timm
-    # via vllm
 tornado==6.4.1
     # via ipykernel
     # via jupyter-client
@@ -972,17 +707,11 @@ tqdm==4.66.6
     # via datasets
     # via deepspeed
     # via evaluate
-    # via gguf
     # via huggingface-hub
     # via kaggle
     # via nabla-vl
-    # via open-clip-torch
-    # via openai
-    # via outlines
     # via peft
-    # via sentence-transformers
     # via transformers
-    # via vllm
 traitlets==5.14.3
     # via comm
     # via ipykernel
@@ -999,83 +728,56 @@ traitlets==5.14.3
     # via nbconvert
     # via nbformat
 transformers==4.51.0
-    # via compressed-tensors
     # via nabla-vl
     # via peft
-    # via sentence-transformers
     # via trl
-    # via vllm
-    # via xgrammar
 triton==3.2.0
     # via torch
 trl==0.11.2
-    # via nabla-vl
-tweepy==4.15.0
     # via nabla-vl
 typepy==1.3.2
     # via dataproperty
     # via pytablewriter
     # via tabledata
 typer==0.12.5
-    # via fastapi-cli
     # via gradio
 types-python-dateutil==2.9.0.20241003
     # via arrow
 typing-extensions==4.12.2
     # via altair
-    # via azure-core
-    # via azure-storage-blob
     # via fastapi
     # via gradio
     # via gradio-client
     # via huggingface-hub
-    # via mistral-common
-    # via openai
-    # via outlines
     # via pydantic
     # via pydantic-core
-    # via rich-toolkit
     # via streamlit
     # via torch
     # via typer
     # via tyro
-    # via vllm
 tyro==0.8.11
     # via trl
 tzdata==2024.2
     # via pandas
-unidic-lite==1.0.8
-    # via nabla-vl
 uri-template==1.3.0
     # via jsonschema
 urllib3==2.2.3
-    # via botocore
     # via gradio
     # via kaggle
     # via requests
     # via sentry-sdk
-uv==0.6.14
+uv==0.6.16
     # via nabla-vl
 uvicorn==0.31.0
-    # via fastapi
-    # via fastapi-cli
     # via gradio
-    # via nabla-vl
-uvloop==0.21.0
-    # via uvicorn
-vllm==0.8.3
     # via nabla-vl
 wandb==0.16.6
     # via nabla-vl
 watchdog==6.0.0
     # via streamlit
-watchfiles==0.20.0
-    # via uvicorn
-    # via vllm
 wavedrom==2.0.3.post3
     # via markdown2
 wcwidth==0.2.13
-    # via ftfy
     # via prompt-toolkit
 webcolors==24.8.0
     # via jsonschema
@@ -1086,17 +788,10 @@ websocket-client==1.8.0
     # via jupyter-server
 websockets==12.0
     # via gradio-client
-    # via uvicorn
 widgetsnbextension==4.0.13
     # via ipywidgets
-xformers==0.0.29.post2
-    # via vllm
-xgrammar==0.1.17
-    # via vllm
 xxhash==3.5.0
     # via datasets
     # via evaluate
 yarl==1.18.3
     # via aiohttp
-zipp==3.21.0
-    # via importlib-metadata
