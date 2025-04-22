@@ -111,6 +111,8 @@ print(response)
 
 #### Using Custom Inference Script
 
+##### Single Image
+
 ```python
 import requests
 from PIL import Image
@@ -150,6 +152,42 @@ for url in urls:
             ).convert("RGB"),
         )[np.newaxis, :, :, :],
     )
+run_model_with_stream(
+    model,
+    tokenizer,
+    data_pipeline,
+    instruction,
+    images=images,
+    device=DEVICE,
+)
+```
+
+##### Video
+
+```python
+import requests
+from PIL import Image
+import numpy as np
+import torch
+from transformers import AutoModel, AutoTokenizer
+
+from nabla_vl.constants import CHAT_TEMPLATE_WITHOUT_SYSTEM_MESSAGE
+from nabla_vl.inference import run_model_with_stream
+from nabla_vl.io import load_video
+from nabla_vl.model import NablaVLForCausalLM
+from nabla_vl.transforms import build_data_pipeline
+
+MODEL = "nablasinc/NABLA-VL"  # Or where the checkpoint gets saved when you fine-tune a model
+DEVICE = "cuda"
+
+model = NablaVLForCausalLM.from_pretrained(MODEL, torch_dtype=torch.bfloat16, resume_download=True)
+model.to(DEVICE)
+model.eval()
+tokenizer = AutoTokenizer.from_pretrained(MODEL, use_fast=False)
+tokenizer.chat_template = CHAT_TEMPLATE_WITHOUT_SYSTEM_MESSAGE
+data_pipeline = build_data_pipeline(model.config, tokenizer)
+instruction = "この動画について時系列順にざっくり説明してください！"
+images = [image[np.newaxis, :, :, :] for image in list(load_video("your/video/path"))]
 run_model_with_stream(
     model,
     tokenizer,
