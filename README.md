@@ -71,6 +71,8 @@ CXX=g++ uv pip install flash-attn --no-build-isolation
 
 ### Training Examples
 
+Easily adapt the model to your custom use cases with your own data.
+
 ```bash
 bash examples/sample_config.sh
 ```
