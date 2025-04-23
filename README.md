@@ -9,6 +9,28 @@
 
 ---
 
+## 🎯 What You Can Do with This Repository
+
+This repository provides tools and examples for working with NABLA-VL, a Japanese Vision-Language Model.
+
+### Inference
+
+Supports input types including:
+
+* Single image
+* Multiple images
+* Video
+
+Use NABLA-VL to perform inference on a variety of visual and textual inputs.
+
+### Fine-tuning
+
+Fine-tune NABLA-VL using your own dataset
+
+Suitable for adapting the model to specific tasks or domains
+
+---
+
 ## ✅ To-Do List
 
 - [x] Publish the NABLA-VL model on Hugging Face
