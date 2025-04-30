@@ -9,7 +9,7 @@ import torch
 from datasets import concatenate_datasets, load_dataset
 from deepspeed.utils import logger
 from tqdm.auto import tqdm
-from transformers import AutoModelForImageTextToText, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from .constants import CHAT_TEMPLATE_WITHOUT_SYSTEM_MESSAGE
 from .inference import run_model
@@ -53,7 +53,7 @@ class Benchmark(ABC):
         self.device = device
         self.dtype = dtype
         self.image_dir = image_dir
-        self.model = AutoModelForImageTextToText.from_pretrained(
+        self.model = AutoModelForCausalLM.from_pretrained(
             model_name_or_path,
             torch_dtype=dtype,
         ).to(device)
@@ -254,8 +254,8 @@ class JMMMU(MMMU):
         "World_History",
     ]
     prefix: Dict[str, str] = {
-        "multiple-choice": "与えられた質問に対し、与えられた選択肢の中から該当する選択肢のアルファベットのみで答えてください。",
-        "open": "与えられた質問に答えよ。ただし、解答は1語または1文でできる限り簡潔に行ってください。",
+        "multiple-choice": "質問に対し、選択肢の中から該当する選択肢のアルファベットのみで答えてください。",
+        "open": "質問に答えよ。ただし、解答は1語または1文でできる限り簡潔に行ってください。",
     }
     max_num_images = 7
 

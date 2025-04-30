@@ -1,14 +1,15 @@
 import math
-from typing import List, Optional, Tuple
+from typing import List, Literal, Optional, Tuple
 
 import torch
 import torch.nn.functional as F
 from deepspeed.utils import logger
+from peft import LoraConfig, get_peft_model
 from torch import BoolTensor, FloatTensor, LongTensor
 from torch.nn import GELU, Identity, LayerNorm, Linear, Parameter, Sequential
 from transformers import (
     AutoConfig,
-    AutoModelForImageTextToText,
+    AutoModelForCausalLM,
     Phi3ForCausalLM,
     Phi3Model,
     PreTrainedTokenizer,
@@ -23,13 +24,29 @@ from .navit import SiglipVisionModel  # type: ignore
 from .utils import get_dtype_by_args, get_total_params, make_inputs_require_grad
 
 
+# Modified from:
+# https://github.com/LLaVA-VL/LLaVA-NeXT/blob/09e5840d5589ad2d6a8656c0a60f21ae134b3309/llava/train/train.py#L242C1-L255C35
+def find_all_linear_names(model):
+    lora_module_names = set()
+    for name, module in model.named_modules():
+        # Skip image encoder parts
+        if any(kw in name for kw in ["vision_tower", "projector"]) is True:
+            continue
+        if isinstance(module, Linear):
+            names = name.split(".")
+            lora_module_names.add(names[0] if len(names) == 1 else names[-1])
+    if "lm_head" in lora_module_names:  # needed for 16-bit
+        lora_module_names.remove("lm_head")
+    return list(lora_module_names)
+
+
 def build_model(
     args: TrainingArguments,
     tokenizer: PreTrainedTokenizer,
-) -> "NablaVLForCausalLM":
+) -> Literal["NablaVLForCausalLM", "NablaVLMoeForCausalLM"]:
     logger.info("Initializing model")
     config = AutoConfig.from_pretrained(args.model_name_or_path)
-    # Values used to initialize model
+    # model
     config.enable_lazy_init = args.enable_lazy_init
     config.vision_tower_name = args.vision_tower_name
     config.enable_flash_attention_2 = args.enable_flash_attention_2
@@ -39,7 +56,18 @@ def build_model(
     config.use_new_line_token = args.use_new_line_token
     config.neftune_alpha = args.neftune_alpha
     config.num_registers = args.num_registers
-    # Values used to initialize data_pipeline
+    # moe
+    config.num_experts = args.num_experts
+    config.moe_intermediate_size = args.moe_intermediate_size
+    config.shared_expert_intermediate_size = args.shared_expert_intermediate_size
+    config.decoder_sparse_step = args.decoder_sparse_step
+    config.num_experts_per_tok = args.num_experts_per_tok
+    config.norm_topk_prob = args.norm_topk_prob
+    config.output_router_logits = args.output_router_logits
+    config.router_aux_loss_coef = args.router_aux_loss_coef
+    config.mlp_only_layers = args.mlp_only_layers
+    config.qkv_bias = args.qkv_bias
+    # data_pipeline
     config.apply_chat_template = args.apply_chat_template
     config.eos_token = args.eos_token
     config.fp16 = args.fp16
@@ -58,13 +86,17 @@ def build_model(
     config.normalize_type = args.normalize_type
     config.wrap_images = args.wrap_images
     config.max_num_tiles = args.max_num_tiles
+    config.use_image_token_no = args.use_image_token_no
     dtype = get_dtype_by_args(args)
-    model = NablaVLForCausalLM.from_pretrained(
-        args.model_name_or_path,
-        config=config,
-        torch_dtype=dtype,
-        attn_implementation=args.attn_implementation,
-    )
+    if args.num_experts > 1:
+        raise NotImplementedError
+    else:
+        model = NablaVLForCausalLM.from_pretrained(
+            args.model_name_or_path,
+            config=config,
+            torch_dtype=dtype,
+            attn_implementation=args.attn_implementation,
+        )
     if args.enable_lazy_init is True:
         logger.info("Initializing vision tower in lazy way")
         model.prepare_lazy_init()
@@ -99,6 +131,22 @@ def build_model(
     if args.use_new_line_token is True:
         model.new_line_tag.requires_grad_(True)
         model.new_column_tag.requires_grad_(True)
+    if args.use_lora is True:
+        if args.bf16 is True:
+            model.to(torch.bfloat16)
+        if args.fp16 is True:
+            model.to(torch.float16)
+        model = get_peft_model(
+            model,
+            LoraConfig(
+                r=args.lora_r,
+                lora_alpha=args.lora_alpha,
+                target_modules=find_all_linear_names(model),
+                lora_dropout=args.lora_dropout,
+                bias=args.lora_bias,
+                task_type="CAUSAL_LM",
+            ),
+        )
     total_params, trainable_params = get_total_params(model)
     logger.info(f"total params: {total_params}, trainable params: {trainable_params}")
     logger.info(f"{trainable_params / total_params * 100.0:.2f}% params are trainable")
@@ -193,7 +241,7 @@ def adjust_inputs_and_labels(
         device=position_ids.device,
     )
     for i in range(n):
-        l = input_embeds[i].size(0)  # noqa
+        l = input_embeds[i].size(0)  # NOQA
         if padding_side == "left":
             new_input_embeds.append(
                 torch.cat(
@@ -574,11 +622,11 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
     def add_noise_to_inputs_embeds(
         self,
         input_embeds: FloatTensor,
-        attention_mask: BoolTensor,
+        attention_masks: BoolTensor,
     ) -> FloatTensor:
-        input_lengths = torch.sum(attention_mask, 1).to(input_embeds)
+        input_lengths = torch.sum(attention_masks, 1).to(input_embeds)
         noise_ = torch.zeros_like(input_embeds).uniform_(-1, 1)
-        delta = noise_ * attention_mask.unsqueeze(2)
+        delta = noise_ * attention_masks.unsqueeze(2)
         dims = input_lengths * input_embeds.size(-1)
         mag = self.config.neftune_alpha / torch.sqrt(dims)
         delta = (delta * mag.view(-1, 1, 1)).detach()
@@ -733,6 +781,8 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             labels = None
         if skip_attention_mask is None:
             attention_mask = None
+        # else:
+        #     attention_masks = attention_masks.to(dtype=skip_attention_masks.dtype)
         if skip_position_ids is None:
             position_ids = None
         return (
@@ -762,7 +812,6 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         num_tiles: Optional[List[List[int]]] = None,
         return_dict: Optional[bool] = None,
         cache_position: Optional[LongTensor] = None,
-        num_logits_to_keep: int = 1,
         **kwargs,
     ) -> CausalLMOutputWithPast:
         if inputs_embeds is None:
@@ -796,7 +845,6 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
             output_hidden_states=output_hidden_states,
             return_dict=return_dict,
             cache_position=cache_position,
-            num_logits_to_keep=num_logits_to_keep,
         )
 
     def prepare_inputs_for_generation(
@@ -886,4 +934,4 @@ class NablaVLForCausalLM(Phi3ForCausalLM):
         )
 
 
-AutoModelForImageTextToText.register(NablaVLConfig, NablaVLForCausalLM)
+AutoModelForCausalLM.register(NablaVLConfig, NablaVLForCausalLM)

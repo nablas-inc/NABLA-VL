@@ -30,13 +30,25 @@ def build_tokenizer(
     tokenizer.add_tokens(
         [
             tokenizers.AddedToken(
-                IM_START, lstrip=False, rstrip=False, normalized=False, special=True
+                IM_START,
+                lstrip=False,
+                rstrip=False,
+                normalized=False,
+                special=True,
             ),
             tokenizers.AddedToken(
-                IM_SEP, lstrip=False, rstrip=False, normalized=False, special=True
+                IM_SEP,
+                lstrip=False,
+                rstrip=False,
+                normalized=False,
+                special=True,
             ),
             tokenizers.AddedToken(
-                IM_END, lstrip=False, rstrip=False, normalized=False, special=True
+                IM_END,
+                lstrip=False,
+                rstrip=False,
+                normalized=False,
+                special=True,
             ),
         ]
     )

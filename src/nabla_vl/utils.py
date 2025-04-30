@@ -12,7 +12,7 @@ from transformers import PretrainedConfig, TrainingArguments
 
 
 def get_dtype_by_args(
-    args_or_config: Union[TrainingArguments, PretrainedConfig],
+    args_or_config: Union[TrainingArguments, PretrainedConfig]
 ) -> Any:
     if args_or_config.fp16 is True:
         dtype = torch.float16
@@ -83,7 +83,7 @@ def get_patch_size(
         logger.warning(
             "invalid patch size detected: "
             "patch_size_h and patch_size_w are different. "
-            f"default patch size (={default_patch_size}) will be used which may causes another error.\n"
+            f"default patch size (={default_patch_size}) will be used which may causes another error.\n"  # NOQA
             "=== warning report ===\n"
             f"image size={image.size()}\n"
             f"patch_attention_mask size={patch_attention_mask.size()}\n"

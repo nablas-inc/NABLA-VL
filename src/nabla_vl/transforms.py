@@ -52,6 +52,7 @@ def build_data_pipeline(
             ),
             Tokenize(
                 tokenizer,
+                use_image_token_no=args_or_config.use_image_token_no,
                 apply_chat_template=args_or_config.apply_chat_template,
                 eos_token=args_or_config.eos_token,
             ),
@@ -274,16 +275,20 @@ class AggregateImages(Transform):
                     hw += max(image.size()[-2:])
                 hw = math.ceil(hw / self.factor) * self.factor
                 # NOTE: All images have the same dtype and device
-                new_image = torch.zeros(
-                    (
-                        1,
-                        3,  # NOTE: All images are converted to RGB
-                        hw,
-                        hw,
-                    ),
-                    dtype=images[0].dtype,
-                    device=images[0].device,
-                )
+                try:
+                    new_image = torch.zeros(
+                        (
+                            1,
+                            3,  # NOTE: All images are converted to RGB
+                            hw,
+                            hw,
+                        ),
+                        dtype=images[0].dtype,
+                        device=images[0].device,
+                    )
+                except RuntimeError:
+                    print(hw)
+                    raise RuntimeError
                 h_mask, w_mask = to_patch_attention_mask_size(hw, hw, self.patch_size)
                 new_patch_attention_mask = torch.zeros(
                     (
@@ -906,6 +911,7 @@ class Tokenize(Transform):
         self,
         tokenizer: PreTrainedTokenizer,
         *,
+        use_image_token_no: bool = False,
         apply_chat_template: bool = False,
         system_prompt: str = SYSTEM_PROMPT,
         image_token: str = IMAGE_TOKEN,
@@ -921,6 +927,7 @@ class Tokenize(Transform):
         self.eos_token = eos_token
         self.ignore_token_id = ignore_token_id
         self.image_token_id = image_token_id
+        self.use_image_token_no = use_image_token_no
         self.apply_chat_template = apply_chat_template
         self.im_start_id = tokenizer.convert_tokens_to_ids(IM_START)
         self.im_sep_id = tokenizer.convert_tokens_to_ids(IM_SEP)
@@ -962,6 +969,21 @@ class Tokenize(Transform):
                 )
             else:
                 input_ids, label = [], []
+            #
+            if self.use_image_token_no is True:
+                num_image_tokens = 0
+                for i in range(0, len(sample["conversations"]), 2):
+                    s = sample["conversations"][i]["value"]
+                    j = s.count(self.image_token)
+                    if j == 0:
+                        continue
+                    start = num_image_tokens
+                    end = start + j
+                    for k in range(start, end):
+                        s = s.replace(self.image_token, f"<image {k + 1}>", 1)
+                    sample["conversations"][i]["value"] = self.image_token + "\n" + s
+                    num_image_tokens = end
+            #
             # NOTE: The conversational order must be human -> gpt
             for i in range(len(sample["conversations"])):
                 # Some datasets contain incorrect roles

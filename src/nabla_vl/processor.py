@@ -232,10 +232,7 @@ class NablaVLProcessor(ProcessorMixin):
         image_processor: Optional[AutoImageProcessor] = None,
         tokenizer: Optional[Union[AutoTokenizer, str]] = None,
         chat_template: Optional[str] = None,
-        *,
-        replace_image_tokens: bool = True,
     ) -> None:
-        self.replace_image_tokens = replace_image_tokens
         if tokenizer is not None and tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.unk_token
         super().__init__(image_processor, tokenizer, chat_template=chat_template)
@@ -248,18 +245,6 @@ class NablaVLProcessor(ProcessorMixin):
         image_token_id = self.tokenizer.convert_tokens_to_ids(IMAGE_TOKEN)
         if num_images > 0:
             instruction = f"{IMAGE_TOKEN * num_images}\n{instruction}"
-        # Replace image tokens with dummy image tokens to show model where image tokens
-        # are placed originally
-        if self.replace_image_tokens is True:
-            num_image_tokens = instruction.count(IMAGE_TOKEN)
-            if num_image_tokens > 0:
-                for i in range(num_image_tokens):
-                    instruction = instruction.replace(
-                        IMAGE_TOKEN,
-                        f"<image {i + 1}>",
-                        1,
-                    )
-                instruction = IMAGE_TOKEN + "\n" + instruction
         input_ids = self.tokenizer.apply_chat_template(
             [
                 {
@@ -308,9 +293,6 @@ class NablaVLProcessor(ProcessorMixin):
             has_image = True
         image_inputs = self.image_processor(images)
         text_inputs = {"input_ids": self.get_input_ids(text, has_image * 1)}
-        text_inputs["attention_mask"] = text_inputs["input_ids"].ne(
-            self.tokenizer.pad_token_id
-        )
         return BatchFeature(data={"num_images": [1], **text_inputs, **image_inputs})
 
 

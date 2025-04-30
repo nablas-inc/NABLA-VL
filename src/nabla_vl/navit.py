@@ -1,11 +1,4 @@
 # coding=utf-8
-
-# This code includes a third-party component licensed under the Apache License 2.0.
-#
-# Component: HuggingFaceM4/siglip-so400m-14-980-flash-attn2-navit
-# Source: https://huggingface.co/HuggingFaceM4/siglip-so400m-14-980-flash-attn2-navit
-# License: Apache License 2.0
-
 # Copyright 2024 Google AI and The HuggingFace Team. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-"""PyTorch Siglip model."""
+""" PyTorch Siglip model."""
 
 
 import math

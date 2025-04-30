@@ -1,3 +1,4 @@
+import math
 import os
 import random
 from typing import Any, Dict, List
@@ -177,7 +178,7 @@ class NablaVLDataset(Dataset):
             for video_path in video_paths:
                 try:
                     video = load_video(video_path)
-                except:  # TODO: Add error handling  # noqa
+                except:  # TODO: Add error handling  # NOQA
                     logger.warning(f"detected corrupted video: {video_path}")
                     return self[random.randint(0, len(self) - 1)]
                 videos.extend([image[np.newaxis, :, :, :] for image in list(video)])
@@ -191,9 +192,18 @@ class NablaVLDataset(Dataset):
             # NOTE: Without this dummy data, training with DeepSpeed is stuck if all
             # samples are from text-only datasets
             images.append(np.zeros(self.dummy_image_size, dtype=np.uint8))
+        hw = 0
+        for image in images:
+            _, h, w, _ = image.shape
+            hw += max(h, w)
+        if math.ceil(hw / 14) * 14 > 524288:
+            return self[random.randint(0, len(self) - 1)]
         conversations = x["conversations"]
         for i in range(len(conversations)):
-            if conversations[i]["value"] is None:
+            if (
+                conversations[i]["value"] is None
+                or isinstance(conversations[i]["value"], str) is False
+            ):
                 logger.warning(f"detected empty conversations: {conversations}")
                 return self[random.randint(0, len(self) - 1)]
         if conversations[0]["from"] != "human":
