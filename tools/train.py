@@ -1,15 +1,15 @@
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import torch.distributed as dist
-import wandb
 from deepspeed.utils import logger
 from torch.utils.data import RandomSampler, Sampler
 from transformers import HfArgumentParser, Trainer, TrainingArguments
 
 import nabla_vl
 import nabla_vl.transforms
+import wandb
 from nabla_vl.sampler import VisionCompatibleLengthGroupedSampler
 
 
@@ -35,13 +35,13 @@ class TrainerWorkaround(Trainer):
 class NablaTrainingArguments(TrainingArguments):
     # General
     json_path: Optional[str] = field(default=None)
-    model_name_or_path: str = field(default="microsoft/phi-4")
+    model_name_or_path: str = field(default="Qwen/Qwen2.5-7B-Instruct")
     enable_lazy_init: bool = field(default=False)
     # Tokenizer
     max_length: int = field(default=4096)
     # Dataset
     dataset_name: str = field(default="NablaVLDataset")
-    annotation_paths: List[str] = field(default_factory=lambda: {})
+    annotation_paths: Dict[str, float] = field(default_factory=lambda: {})
     image_dir: str = field(default="")
     remove_instructions: bool = field(default=False)
     max_num_samples: int = field(default=-1)
@@ -76,6 +76,7 @@ class NablaTrainingArguments(TrainingArguments):
     add_marks: bool = field(default=False)
     wrap_images: bool = field(default=True)
     max_num_tiles: int = field(default=4)
+    use_image_token_no: bool = field(default=False)
     # Model
     vision_tower_name: str = field(
         default="HuggingFaceM4/siglip-so400m-14-980-flash-attn2-navit"
@@ -93,9 +94,29 @@ class NablaTrainingArguments(TrainingArguments):
     use_new_column_token: bool = field(default=False)
     neftune_alpha: Optional[float] = field(default=False)
     num_registers: int = field(default=-1)
+    # MoE
+    num_experts: int = field(default=1)
+    moe_intermediate_size: int = field(default=5120)
+    shared_expert_intermediate_size: int = field(default=5120)
+    decoder_sparse_step: int = field(default=1)
+    num_experts_per_tok: int = field(default=1)
+    norm_topk_prob: bool = field(default=False)
+    output_router_logits: bool = field(default=False)
+    router_aux_loss_coef: float = field(default=0.001)
+    mlp_only_layers: List[int] = field(default_factory=lambda: [])
+    qkv_bias: bool = field(default=True)
+    checkpoint_index_path: str = field(default="")
+    # LoRA
+    use_lora: bool = field(default=False)
+    lora_r: int = field(default=64)
+    lora_alpha: int = field(default=16)
+    lora_dropout: float = field(default=0.05)
+    lora_bias: str = field(default="none")
     # Accelerate
     fp8: bool = field(default=False)
     # Others
+    entity: str = field(default="nablas-geniac")
+    project: str = field(default="stage-1-small")
     num_gpus_per_node: int = field(default=8)
     num_nodes: int = field(default=1)
 
